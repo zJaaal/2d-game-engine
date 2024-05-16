@@ -1,24 +1,36 @@
-import './style.css'
-import typescriptLogo from './typescript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter.ts'
+import './style.css';
+import { Engine } from './game-engine/engine';
+import { Ball, BallSettings } from './test/Ball';
+import { genEntityBalls } from './test/utils';
+import { CanvasSettings } from './game-engine/engine/types';
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`
+const canvasSettings: CanvasSettings = {
+    width: 640,
+    height: 480,
+    styleClass: 'game__canvas',
+    id: 'game'
+};
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+const randomString = Math.random().toString(36).substring(7);
+
+const ballSettings: BallSettings = {
+    x: 100,
+    y: 100,
+    speed: 1,
+    id: randomString,
+    radius: 20,
+    color: 'red',
+    strokeColor: 'black',
+    DEBUG: true
+};
+
+const ball = new Ball(ballSettings);
+
+const entityBalls = genEntityBalls(10, 640, 480);
+
+const engine = new Engine({
+    canvas: canvasSettings
+});
+
+engine.initEngine();
+engine.initMainLoop(ball, entityBalls);
