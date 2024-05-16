@@ -44,9 +44,11 @@ export class Ball extends Player {
         startAngle,
         endAngle,
         color,
-        strokeColor
+        strokeColor,
+        initialAcceleration,
+        currentAcceleration
     }: BallSettings) {
-        super({ x, y, speed, id });
+        super({ x, y, speed, id, initialAcceleration, currentAcceleration });
 
         this.ballSettings = {
             x,
@@ -57,18 +59,32 @@ export class Ball extends Player {
             startAngle,
             endAngle,
             color,
-            strokeColor
+            strokeColor,
+            initialAcceleration,
+            currentAcceleration
         };
 
         this.controls = {
-            [BallControlMap.UP]: this.moveUp.bind(this),
-            [BallControlMap.DOWN]: this.moveDown.bind(this),
-            [BallControlMap.LEFT]: this.moveLeft.bind(this),
-            [BallControlMap.RIGHT]: this.moveRight.bind(this),
-            [BallControlMap.ALT_UP]: this.moveUp.bind(this),
-            [BallControlMap.ALT_DOWN]: this.moveDown.bind(this),
-            [BallControlMap.ALT_LEFT]: this.moveLeft.bind(this),
-            [BallControlMap.ALT_RIGHT]: this.moveRight.bind(this)
+            keyDown: {
+                [BallControlMap.UP]: this.moveUp.bind(this),
+                [BallControlMap.DOWN]: this.moveDown.bind(this),
+                [BallControlMap.LEFT]: this.moveLeft.bind(this),
+                [BallControlMap.RIGHT]: this.moveRight.bind(this),
+                [BallControlMap.ALT_UP]: this.moveUp.bind(this),
+                [BallControlMap.ALT_DOWN]: this.moveDown.bind(this),
+                [BallControlMap.ALT_LEFT]: this.moveLeft.bind(this),
+                [BallControlMap.ALT_RIGHT]: this.moveRight.bind(this)
+            },
+            keyUp: {
+                [BallControlMap.UP]: this.resetVerticalMovement.bind(this),
+                [BallControlMap.DOWN]: this.resetVerticalMovement.bind(this),
+                [BallControlMap.LEFT]: this.resetSidewaysMovement.bind(this),
+                [BallControlMap.RIGHT]: this.resetSidewaysMovement.bind(this),
+                [BallControlMap.ALT_UP]: this.resetVerticalMovement.bind(this),
+                [BallControlMap.ALT_DOWN]: this.resetVerticalMovement.bind(this),
+                [BallControlMap.ALT_LEFT]: this.resetSidewaysMovement.bind(this),
+                [BallControlMap.ALT_RIGHT]: this.resetSidewaysMovement.bind(this)
+            }
         };
     }
 
@@ -91,19 +107,46 @@ export class Ball extends Player {
     }
 
     private moveUp() {
-        this.y -= this.speed;
+        this.currentAcceleration.y = -this.initialAcceleration.y;
+
+        this.speed.y += this.currentAcceleration.y;
+
+        this.y += this.speed.y;
     }
 
     private moveDown() {
-        this.y += this.speed;
+        this.currentAcceleration.y = this.initialAcceleration.y;
+
+        this.speed.y += this.currentAcceleration.y;
+
+        this.y += this.speed.y;
     }
 
     private moveLeft() {
-        this.x -= this.speed;
+        this.currentAcceleration.x = -this.initialAcceleration.x;
+
+        this.speed.x += this.currentAcceleration.x;
+
+        this.x += this.speed.x;
     }
 
     private moveRight() {
-        this.x += this.speed;
+        this.currentAcceleration.x = this.initialAcceleration.x;
+
+        this.speed.x += this.currentAcceleration.x;
+
+        this.x += this.speed.x;
+    }
+
+    private resetSidewaysMovement() {
+        this.currentAcceleration.x = 0;
+        this.speed.x = 0;
+    }
+
+    private resetVerticalMovement() {
+        this.currentAcceleration.y = 0;
+
+        this.speed.y = 0;
     }
 }
 

@@ -109,14 +109,26 @@ export enum KeyCodes {
     NUMPAD_EQUAL = 'NumpadEqual'
 }
 
-export type PlayerControl = {
+export type Controls = {
     [key in KeyCodes]: (player: Player) => void;
+};
+
+export type PlayerControl = {
+    keyUp: Partial<Controls>;
+    keyDown: Partial<Controls>;
+};
+
+export type MovementProperties = {
+    x: number;
+    y: number;
 };
 
 export interface PlayerSettings {
     x: number;
     y: number;
-    speed: number;
+    speed: MovementProperties;
+    initialAcceleration: MovementProperties;
+    currentAcceleration: MovementProperties;
     id: string;
     DEBUG?: boolean;
 }

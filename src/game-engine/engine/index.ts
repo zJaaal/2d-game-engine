@@ -25,6 +25,8 @@ export class Engine {
         });
 
         this.canvas.addEventListener('keyup', (e) => {
+            console.log('keyup', e.code);
+
             this.pressedKeys.delete(e.code as KeyCodes);
         });
     }

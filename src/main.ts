@@ -16,7 +16,18 @@ const randomString = Math.random().toString(36).substring(7);
 const ballSettings: BallSettings = {
     x: 100,
     y: 100,
-    speed: 1,
+    speed: {
+        x: 0,
+        y: 0
+    },
+    initialAcceleration: {
+        x: 0.01,
+        y: 0.01
+    },
+    currentAcceleration: {
+        x: 0,
+        y: 0
+    },
     id: randomString,
     radius: 20,
     color: 'red',
