@@ -1,5 +1,6 @@
 import { Entity } from '../game-engine/Entity';
 import { EntitySettings } from '../game-engine/Entity/types';
+
 import { Player } from '../game-engine/player';
 import { Controls, KeyCodes, PlayerSettings } from '../game-engine/player/types';
 
@@ -45,12 +46,21 @@ export class Ball extends Player {
         endAngle,
         color,
         strokeColor,
-        initialAcceleration,
-        currentAcceleration,
+        accelerationFactor,
+        acceleration,
         friction,
         DEBUG
     }: BallSettings) {
-        super({ x, y, speed, id, initialAcceleration, currentAcceleration, friction, DEBUG });
+        super({
+            x,
+            y,
+            speed,
+            id,
+            accelerationFactor,
+            acceleration,
+            friction,
+            DEBUG
+        });
 
         this.ballSettings = {
             x,
@@ -62,8 +72,8 @@ export class Ball extends Player {
             endAngle,
             color,
             strokeColor,
-            initialAcceleration,
-            currentAcceleration,
+            accelerationFactor,
+            acceleration,
             friction
         };
     }
@@ -87,21 +97,21 @@ export class Ball extends Player {
 
         if (this.DEBUG) {
             ctx.beginPath();
+            this.acceleration.drawVector({
+                x: this.x,
+                y: this.y,
+                color: 'green',
+                scalar: 100,
+                ctx
+            });
 
-            ctx.moveTo(this.x, this.y);
-            ctx.lineTo(
-                this.x + this.currentAcceleration.x * 100,
-                this.y + this.currentAcceleration.y * 100
-            );
-            ctx.strokeStyle = 'green';
-            ctx.stroke();
-
-            ctx.beginPath();
-
-            ctx.moveTo(this.x, this.y);
-            ctx.lineTo(this.x + this.speed.x * 10, this.y + this.speed.y * 10);
-            ctx.strokeStyle = 'blue';
-            ctx.stroke();
+            this.speed.drawVector({
+                x: this.x,
+                y: this.y,
+                color: 'blue',
+                scalar: 10,
+                ctx
+            });
         }
     }
 
@@ -113,34 +123,31 @@ export class Ball extends Player {
             controlMap.get(BallControlMap.RIGHT) || controlMap.get(BallControlMap.ALT_RIGHT);
 
         if (UP) {
-            this.currentAcceleration.y = -this.initialAcceleration.y;
+            this.acceleration.y = -this.accelerationFactor;
         }
 
         if (DOWN) {
-            this.currentAcceleration.y = this.initialAcceleration.y;
+            this.acceleration.y = this.accelerationFactor;
         }
 
         if (LEFT) {
-            this.currentAcceleration.x = -this.initialAcceleration.x;
+            this.acceleration.x = -this.accelerationFactor;
         }
 
         if (RIGHT) {
-            this.currentAcceleration.x = this.initialAcceleration.x;
+            this.acceleration.x = this.accelerationFactor;
         }
 
         if (!UP && !DOWN) {
-            this.currentAcceleration.y = 0;
+            this.acceleration.y = 0;
         }
 
         if (!LEFT && !RIGHT) {
-            this.currentAcceleration.x = 0;
+            this.acceleration.x = 0;
         }
 
-        this.speed.x += this.currentAcceleration.x;
-        this.speed.y += this.currentAcceleration.y;
-
-        this.speed.x *= 1 - this.ballSettings.friction;
-        this.speed.y *= 1 - this.ballSettings.friction;
+        this.speed = this.speed.add(this.acceleration);
+        this.speed = this.speed.multiply(1 - this.ballSettings.friction);
 
         this.x += this.speed.x;
         this.y += this.speed.y;

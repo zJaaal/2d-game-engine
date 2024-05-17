@@ -1,3 +1,5 @@
+import { Vector } from '../Vector';
+
 export enum KeyCodes {
     BACKSPACE = 'Backspace',
     TAB = 'Tab',
@@ -109,17 +111,12 @@ export enum KeyCodes {
 
 export type Controls<T> = Map<T extends KeyCodes ? T : string, boolean>;
 
-export type MovementProperties = {
-    x: number;
-    y: number;
-};
-
 export interface PlayerSettings {
     x: number;
     y: number;
-    speed: MovementProperties;
-    initialAcceleration: MovementProperties;
-    currentAcceleration: MovementProperties;
+    speed: Vector;
+    acceleration: Vector;
+    accelerationFactor: number;
     friction: number;
     id: string;
     DEBUG?: boolean;

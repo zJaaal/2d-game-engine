@@ -1,11 +1,12 @@
-import { Controls, KeyCodes, MovementProperties, PlayerSettings } from './types';
+import { Vector } from '../Vector';
+import { Controls, KeyCodes, PlayerSettings } from './types';
 
 export class Player {
     x: number;
     y: number;
-    speed: MovementProperties;
-    initialAcceleration: MovementProperties;
-    currentAcceleration: MovementProperties;
+    accelerationFactor: number;
+    speed: Vector;
+    acceleration: Vector;
     protected DEBUG: boolean;
     id: string;
 
@@ -15,16 +16,16 @@ export class Player {
         speed,
         id,
         DEBUG = false,
-        initialAcceleration,
-        currentAcceleration
+        accelerationFactor,
+        acceleration
     }: PlayerSettings) {
         this.x = x;
         this.y = y;
         this.speed = speed;
         this.id = id;
         this.DEBUG = DEBUG;
-        this.initialAcceleration = initialAcceleration;
-        this.currentAcceleration = currentAcceleration;
+        this.accelerationFactor = accelerationFactor;
+        this.acceleration = acceleration;
     }
 
     drawPlayer(_ctx: CanvasRenderingContext2D) {

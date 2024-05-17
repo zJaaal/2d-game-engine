@@ -3,6 +3,7 @@ import { Engine } from './game-engine/engine';
 import { Ball, BallSettings } from './test/Ball';
 import { genEntityBalls } from './test/utils';
 import { CanvasSettings } from './game-engine/engine/types';
+import { Vector } from './game-engine/Vector';
 
 const PADDING = 100;
 const ASPECT_RATIO = 1.7; // 16:9
@@ -22,18 +23,9 @@ const randomString = Math.random().toString(36).substring(7);
 const ballSettings: BallSettings = {
     x: 100,
     y: 100,
-    speed: {
-        x: 0,
-        y: 0
-    },
-    initialAcceleration: {
-        x: 0.5,
-        y: 0.5
-    },
-    currentAcceleration: {
-        x: 0,
-        y: 0
-    },
+    speed: new Vector(0, 0),
+    accelerationFactor: 0.8,
+    acceleration: new Vector(0, 0),
     id: randomString,
     radius: 20,
     color: 'red',
