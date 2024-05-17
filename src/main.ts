@@ -1,34 +1,34 @@
 import './style.css';
 import { Engine } from './game-engine/engine';
 import { Ball, BallSettings } from './test/Ball';
-import { genEntityBalls } from './test/utils';
-import { CanvasSettings, MainLoop } from './game-engine/engine/types';
+import {
+    penetrationResolution,
+    detectCollision,
+    genEntityBalls,
+    collisionResolution,
+    RNGPosition,
+    CANVAS_HEIGHT,
+    CANVAS_WIDTH
+} from './test/utils';
+import { CanvasSettings, DebugEntity } from './game-engine/engine/types';
 import { Vector } from './game-engine/Vector';
-import { Entity } from './game-engine/Entity';
-
-const PADDING = 100;
-const ASPECT_RATIO = 1.7; // 16:9
-
-const canvasHeight = window.document.body.clientHeight - PADDING;
-const canvasWidth = canvasHeight * ASPECT_RATIO;
 
 const canvasSettings: CanvasSettings = {
-    width: canvasWidth,
-    height: canvasHeight,
+    width: CANVAS_WIDTH,
+    height: CANVAS_HEIGHT,
     styleClass: 'game__canvas',
     id: 'game'
 };
 
-const randomString = Math.random().toString(36).substring(7);
-
 const ballSettings: BallSettings = {
-    x: 100,
-    y: 100,
+    position: RNGPosition(),
     speed: new Vector(0, 0),
     accelerationFactor: 1,
+    elasticity: Math.random(),
+    mass: 50 * 0.06,
     acceleration: new Vector(0, 0),
-    id: randomString,
-    radius: 20,
+    id: 'MainBall',
+    radius: 50,
     color: 'red',
     strokeColor: 'black',
     DEBUG: true,
@@ -37,8 +37,8 @@ const ballSettings: BallSettings = {
 
 const ball = new Ball(ballSettings);
 
-// const entityBalls = genEntityBalls(10, canvasWidth, canvasHeight);
-const entityBalls: Entity[] = [];
+const entityBalls = genEntityBalls(20, ballSettings);
+// const entityBalls: Entity[] = [];
 
 const engine = new Engine({
     canvas: canvasSettings
@@ -46,16 +46,19 @@ const engine = new Engine({
 
 engine.initEngine();
 
-const mainLoop: MainLoop = (ctx, pressedKeys) => {
-    ctx?.clearRect(0, 0, canvasSettings.width, canvasSettings.height);
-
-    ball.drawPlayer(ctx as CanvasRenderingContext2D);
-
-    entityBalls.forEach((entity) => {
-        entity.drawEntity(ctx as CanvasRenderingContext2D);
-    });
-
-    ball.handleControls(pressedKeys);
+const debugEntity: DebugEntity<Ball> = (ctx, entity, engine, i) => {
+    ctx!.fillText(
+        `Mass: ${entity.mass.toFixed(2)}\nElasticity: ${entity.elasticity.toFixed(2)}`,
+        entity.position.x + entity.radius,
+        entity.position.y + entity.radius
+    );
 };
 
-engine.initMainLoop(mainLoop);
+engine.initMainLoop(
+    ball,
+    entityBalls,
+    detectCollision,
+    penetrationResolution,
+    collisionResolution,
+    debugEntity
+);

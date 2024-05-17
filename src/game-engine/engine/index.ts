@@ -1,5 +1,14 @@
-import { Controls, KeyCodes } from '../player/types';
-import { CanvasSettings, EngineSettings, MainLoop } from './types';
+import { Vector } from '../Vector';
+import { Entity } from '../entity';
+import { Controls, KeyCodes } from '../entity/types';
+import {
+    CanvasSettings,
+    PenetrationResolution,
+    DebugEntity,
+    DetectCollision,
+    EngineSettings,
+    CollisionResolution
+} from './types';
 
 export class Engine {
     canvasSettings: CanvasSettings;
@@ -8,6 +17,8 @@ export class Engine {
     ctx?: CanvasRenderingContext2D | null;
 
     pressedKeys: Controls<KeyCodes> = new Map<KeyCodes, boolean>();
+
+    distanceVectors: Vector[] = [];
 
     constructor(settings: EngineSettings) {
         this.canvasSettings = settings.canvas;
@@ -27,17 +38,45 @@ export class Engine {
         });
     }
 
-    initMainLoop(mainLoop: MainLoop) {
+    initMainLoop<T extends Entity>(
+        mainEntity: T,
+        entities: T[],
+        detectCollision: DetectCollision<T>,
+        penetrationResolution: PenetrationResolution<T>,
+        collisionResolution: CollisionResolution<T>,
+        debugEntity?: DebugEntity<T>
+    ) {
         if (!this.ctx) {
             throw new Error('Canvas context is not initialized');
         }
 
         const loop = () => {
-            mainLoop(this.ctx!, this.pressedKeys);
+            mainEntity.handleControls(this.pressedKeys);
+            this.ctx!.clearRect(0, 0, this.canvasSettings.width, this.canvasSettings.height);
+            this.ctx!.font = '16px Arial';
+
+            [mainEntity, ...entities].forEach((entity, i) => {
+                entity.drawEntity(this.ctx as CanvasRenderingContext2D);
+
+                // This is inefficient, but it's fine for now
+                for (let j = i; j < entities.length; j++) {
+                    if (detectCollision(entity, entities[j])) {
+                        penetrationResolution(entity, entities[j]);
+                        collisionResolution(entity, entities[j]);
+                    }
+                }
+
+                entity.reposition();
+
+                this.distanceVectors[i] = entity.position.subtract(mainEntity.position);
+
+                debugEntity?.(this.ctx as CanvasRenderingContext2D, entity, this, i);
+            });
+
             requestAnimationFrame(loop);
         };
 
-        loop();
+        requestAnimationFrame(loop);
     }
 
     private initCanva(): HTMLCanvasElement {

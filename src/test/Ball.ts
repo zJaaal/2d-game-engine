@@ -1,8 +1,5 @@
-import { Entity } from '../game-engine/Entity';
-import { EntitySettings } from '../game-engine/Entity/types';
-
-import { Player } from '../game-engine/player';
-import { Controls, KeyCodes, PlayerSettings } from '../game-engine/player/types';
+import { Entity } from '../game-engine/entity';
+import { Controls, EntitySettings, KeyCodes } from '../game-engine/entity/types';
 
 export enum BallControlMap {
     UP = KeyCodes.KEY_W,
@@ -15,7 +12,7 @@ export enum BallControlMap {
     ALT_RIGHT = KeyCodes.ARROW_RIGHT
 }
 
-export interface BallSettings extends PlayerSettings {
+export interface BallSettings extends EntitySettings {
     radius: number;
     startAngle?: number;
     endAngle?: number;
@@ -33,66 +30,56 @@ export interface EntityBallSettings extends EntitySettings {
 
 const FULL_DEGREES = Math.PI * 2;
 
-export class Ball extends Player {
-    ballSettings: BallSettings;
+export class Ball extends Entity {
+    radius: number;
+    startAngle: number;
+    endAngle: number;
+    color: string;
+    strokeColor: string;
 
     constructor({
-        x,
-        y,
+        position,
         speed,
         id,
+        accelerationFactor,
+        acceleration,
+        friction,
+        DEBUG,
+        mass,
+        elasticity,
         radius,
         startAngle,
         endAngle,
         color,
-        strokeColor,
-        accelerationFactor,
-        acceleration,
-        friction,
-        DEBUG
+        strokeColor
     }: BallSettings) {
         super({
-            x,
-            y,
+            position,
             speed,
             id,
             accelerationFactor,
             acceleration,
             friction,
-            DEBUG
+            DEBUG,
+            mass,
+            elasticity
         });
 
-        this.ballSettings = {
-            x,
-            y,
-            speed,
-            id,
-            radius,
-            startAngle,
-            endAngle,
-            color,
-            strokeColor,
-            accelerationFactor,
-            acceleration,
-            friction
-        };
+        this.radius = radius;
+        this.startAngle = startAngle ?? 0;
+        this.endAngle = endAngle ?? FULL_DEGREES;
+        this.color = color ?? 'black';
+        this.strokeColor = strokeColor ?? 'black';
     }
 
-    override drawPlayer(ctx: CanvasRenderingContext2D) {
-        const {
-            radius,
-            startAngle = 0,
-            endAngle = FULL_DEGREES,
-            strokeColor = 'black',
-            color = 'black'
-        } = this.ballSettings;
+    override drawEntity(ctx: CanvasRenderingContext2D) {
         ctx.beginPath();
 
-        ctx.arc(this.x, this.y, radius, startAngle, endAngle);
+        ctx.arc(this.position.x, this.position.y, this.radius, this.startAngle, this.endAngle);
 
-        ctx.strokeStyle = strokeColor;
+        ctx.strokeStyle = this.strokeColor;
         ctx.stroke();
-        ctx.fillStyle = color;
+        ctx.fillStyle = this.color;
         ctx.fill();
 
         if (this.DEBUG) {
@@ -125,9 +112,9 @@ export class Ball extends Player {
             });
             ctx.beginPath();
 
-            ctx.arc(DEBUG_X, DEBUG_Y, 50, startAngle, endAngle);
+            ctx.arc(DEBUG_X, DEBUG_Y, 50, this.startAngle, this.endAngle);
 
-            ctx.strokeStyle = strokeColor;
+            ctx.strokeStyle = this.strokeColor;
             ctx.stroke();
         }
     }
@@ -162,60 +149,72 @@ export class Ball extends Player {
         if (!LEFT && !RIGHT) {
             this.acceleration.x = 0;
         }
+    }
 
+    override reposition() {
         this.acceleration = this.acceleration.unit().multiply(this.accelerationFactor);
         this.speed = this.speed.add(this.acceleration);
-        this.speed = this.speed.multiply(1 - this.ballSettings.friction);
+        this.speed = this.speed.multiply(1 - this.friction);
 
-        this.x += this.speed.x;
-        this.y += this.speed.y;
+        this.position = this.position.add(this.speed);
     }
 }
 
-export class EntityBall extends Entity {
-    ballSettings: EntityBallSettings;
+export class EntityBall extends Ball {
+    radius: number;
+    startAngle: number;
+    endAngle: number;
+    color: string;
+    strokeColor: string;
 
     constructor({
-        x,
-        y,
+        position,
         speed,
         id,
+        acceleration,
+        mass,
+        accelerationFactor,
+        elasticity,
+        friction,
         radius,
         startAngle,
         endAngle,
         color,
         strokeColor
     }: EntityBallSettings) {
-        super({ x, y, speed, id });
-
-        this.ballSettings = {
-            x,
-            y,
+        super({
+            position,
             speed,
             id,
             radius,
             startAngle,
             endAngle,
             color,
-            strokeColor
-        };
+            mass,
+            elasticity,
+            strokeColor,
+            acceleration,
+            accelerationFactor,
+            friction
+        });
+
+        this.radius = radius;
+        this.startAngle = startAngle ?? 0;
+        this.endAngle = endAngle ?? FULL_DEGREES;
+        this.color = color ?? 'black';
+        this.strokeColor = strokeColor ?? 'black';
     }
 
     override drawEntity(ctx: CanvasRenderingContext2D) {
-        const {
-            radius,
-            startAngle = 0,
-            endAngle = FULL_DEGREES,
-            strokeColor = 'black',
-            color = 'black'
-        } = this.ballSettings;
         ctx.beginPath();
 
-        ctx.arc(this.x, this.y, radius, startAngle, endAngle);
+        ctx.arc(this.position.x, this.position.y, this.radius, this.startAngle, this.endAngle);
 
-        ctx.strokeStyle = strokeColor;
+        ctx.strokeStyle = this.strokeColor;
         ctx.stroke();
-        ctx.fillStyle = color;
+        ctx.fillStyle = this.color;
         ctx.fill();
     }
+
+    override handleControls(_controlMap: Controls<BallControlMap>) {}
 }

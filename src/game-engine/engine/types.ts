@@ -1,4 +1,4 @@
-import { Controls, KeyCodes } from '../player/types';
+import { Engine } from '.';
 
 export interface EngineSettings {
     canvas: CanvasSettings;
@@ -11,4 +11,12 @@ export interface CanvasSettings {
     styleClass: string;
 }
 
-export type MainLoop = (ctx: CanvasRenderingContext2D, pressedKeys: Controls<KeyCodes>) => void;
+export type DebugEntity<T> = (
+    ctx: CanvasRenderingContext2D,
+    entity: T,
+    engine: Engine,
+    entityIndex: number
+) => void;
+export type CollisionResolution<T> = (a: T, b: T) => void;
+export type PenetrationResolution<T> = (a: T, b: T) => void;
+export type DetectCollision<T> = (a: T, b: T) => boolean;
