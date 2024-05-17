@@ -4,11 +4,11 @@ import { Ball, BallSettings } from './test/Ball';
 import { genEntityBalls } from './test/utils';
 import { CanvasSettings } from './game-engine/engine/types';
 
-const PADDING = 300;
-const HEIGHT_RATIO = 0.9;
+const PADDING = 100;
+const ASPECT_RATIO = 1.7; // 16:9
 
-const canvasWidth = window.document.body.clientWidth - PADDING;
-const canvasHeight = window.document.body.clientHeight * HEIGHT_RATIO;
+const canvasHeight = window.document.body.clientHeight - PADDING;
+const canvasWidth = canvasHeight * ASPECT_RATIO;
 
 const canvasSettings: CanvasSettings = {
     width: canvasWidth,
