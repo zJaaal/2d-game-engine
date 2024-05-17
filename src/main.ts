@@ -2,8 +2,9 @@ import './style.css';
 import { Engine } from './game-engine/engine';
 import { Ball, BallSettings } from './test/Ball';
 import { genEntityBalls } from './test/utils';
-import { CanvasSettings } from './game-engine/engine/types';
+import { CanvasSettings, MainLoop } from './game-engine/engine/types';
 import { Vector } from './game-engine/Vector';
+import { Entity } from './game-engine/Entity';
 
 const PADDING = 100;
 const ASPECT_RATIO = 1.7; // 16:9
@@ -24,7 +25,7 @@ const ballSettings: BallSettings = {
     x: 100,
     y: 100,
     speed: new Vector(0, 0),
-    accelerationFactor: 0.8,
+    accelerationFactor: 1,
     acceleration: new Vector(0, 0),
     id: randomString,
     radius: 20,
@@ -36,11 +37,25 @@ const ballSettings: BallSettings = {
 
 const ball = new Ball(ballSettings);
 
-const entityBalls = genEntityBalls(10, canvasWidth, canvasHeight);
+// const entityBalls = genEntityBalls(10, canvasWidth, canvasHeight);
+const entityBalls: Entity[] = [];
 
 const engine = new Engine({
     canvas: canvasSettings
 });
 
 engine.initEngine();
-engine.initMainLoop(ball, entityBalls);
+
+const mainLoop: MainLoop = (ctx, pressedKeys) => {
+    ctx?.clearRect(0, 0, canvasSettings.width, canvasSettings.height);
+
+    ball.drawPlayer(ctx as CanvasRenderingContext2D);
+
+    entityBalls.forEach((entity) => {
+        entity.drawEntity(ctx as CanvasRenderingContext2D);
+    });
+
+    ball.handleControls(pressedKeys);
+};
+
+engine.initMainLoop(mainLoop);

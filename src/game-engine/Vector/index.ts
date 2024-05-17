@@ -25,6 +25,20 @@ export class Vector {
         return new Vector(this.x * scalar, this.y * scalar);
     }
 
+    unit() {
+        const magnitude = this.magnitude();
+
+        return magnitude ? new Vector(this.x / magnitude, this.y / magnitude) : new Vector(0, 0);
+    }
+
+    normal() {
+        return new Vector(-this.y, this.x).unit();
+    }
+
+    static dot(v1: Vector, v2: Vector) {
+        return v1.x * v2.x + v1.y * v2.y;
+    }
+
     drawVector({ x, y, color, scalar, ctx }: DrawVector) {
         ctx.strokeStyle = color;
         ctx.beginPath();

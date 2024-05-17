@@ -1,7 +1,5 @@
-import { Entity } from '../Entity';
-import { Player } from '../player';
 import { Controls, KeyCodes } from '../player/types';
-import { CanvasSettings, EngineSettings } from './types';
+import { CanvasSettings, EngineSettings, MainLoop } from './types';
 
 export class Engine {
     canvasSettings: CanvasSettings;
@@ -29,26 +27,17 @@ export class Engine {
         });
     }
 
-    initMainLoop(player: Player, entities: Entity[] = []) {
+    initMainLoop(mainLoop: MainLoop) {
         if (!this.ctx) {
             throw new Error('Canvas context is not initialized');
         }
 
-        const mainLoop = () => {
-            this.ctx?.clearRect(0, 0, this.canvasSettings.width, this.canvasSettings.height);
-
-            player.drawPlayer(this.ctx as CanvasRenderingContext2D);
-
-            entities.forEach((entity) => {
-                entity.drawEntity(this.ctx as CanvasRenderingContext2D);
-            });
-
-            player.handleControls(this.pressedKeys);
-
-            requestAnimationFrame(mainLoop);
+        const loop = () => {
+            mainLoop(this.ctx!, this.pressedKeys);
+            requestAnimationFrame(loop);
         };
 
-        mainLoop();
+        loop();
     }
 
     private initCanva(): HTMLCanvasElement {

@@ -96,22 +96,39 @@ export class Ball extends Player {
         ctx.fill();
 
         if (this.DEBUG) {
+            const DEBUG_X = ctx.canvas.width - 100;
+            const DEBUG_Y = ctx.canvas.height - 100;
+
             ctx.beginPath();
-            this.acceleration.drawVector({
-                x: this.x,
-                y: this.y,
-                color: 'green',
-                scalar: 100,
+            this.acceleration.unit().drawVector({
+                x: DEBUG_X,
+                y: DEBUG_Y,
+                color: 'blue',
+                scalar: 50,
                 ctx
             });
 
             this.speed.drawVector({
-                x: this.x,
-                y: this.y,
-                color: 'blue',
+                x: DEBUG_X,
+                y: DEBUG_Y,
+                color: 'green',
                 scalar: 10,
                 ctx
             });
+
+            this.acceleration.normal().drawVector({
+                x: DEBUG_X,
+                y: DEBUG_Y,
+                color: 'black',
+                scalar: 50,
+                ctx
+            });
+            ctx.beginPath();
+
+            ctx.arc(DEBUG_X, DEBUG_Y, 50, startAngle, endAngle);
+
+            ctx.strokeStyle = strokeColor;
+            ctx.stroke();
         }
     }
 
@@ -146,6 +163,7 @@ export class Ball extends Player {
             this.acceleration.x = 0;
         }
 
+        this.acceleration = this.acceleration.unit().multiply(this.accelerationFactor);
         this.speed = this.speed.add(this.acceleration);
         this.speed = this.speed.multiply(1 - this.ballSettings.friction);
 
