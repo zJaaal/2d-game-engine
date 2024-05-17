@@ -4,9 +4,15 @@ import { Ball, BallSettings } from './test/Ball';
 import { genEntityBalls } from './test/utils';
 import { CanvasSettings } from './game-engine/engine/types';
 
+const PADDING = 300;
+const HEIGHT_RATIO = 0.9;
+
+const canvasWidth = window.document.body.clientWidth - PADDING;
+const canvasHeight = window.document.body.clientHeight * HEIGHT_RATIO;
+
 const canvasSettings: CanvasSettings = {
-    width: 640,
-    height: 480,
+    width: canvasWidth,
+    height: canvasHeight,
     styleClass: 'game__canvas',
     id: 'game'
 };
@@ -38,7 +44,7 @@ const ballSettings: BallSettings = {
 
 const ball = new Ball(ballSettings);
 
-const entityBalls = genEntityBalls(10, 640, 480);
+const entityBalls = genEntityBalls(10, canvasWidth, canvasHeight);
 
 const engine = new Engine({
     canvas: canvasSettings
