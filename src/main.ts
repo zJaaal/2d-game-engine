@@ -21,8 +21,8 @@ const ballSettings: BallSettings = {
         y: 0
     },
     initialAcceleration: {
-        x: 0.01,
-        y: 0.01
+        x: 0.5,
+        y: 0.5
     },
     currentAcceleration: {
         x: 0,
@@ -32,7 +32,8 @@ const ballSettings: BallSettings = {
     radius: 20,
     color: 'red',
     strokeColor: 'black',
-    DEBUG: true
+    DEBUG: true,
+    friction: 0.1
 };
 
 const ball = new Ball(ballSettings);

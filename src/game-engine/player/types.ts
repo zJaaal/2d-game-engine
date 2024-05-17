@@ -1,5 +1,3 @@
-import { Player } from '.';
-
 export enum KeyCodes {
     BACKSPACE = 'Backspace',
     TAB = 'Tab',
@@ -109,14 +107,7 @@ export enum KeyCodes {
     NUMPAD_EQUAL = 'NumpadEqual'
 }
 
-export type Controls = {
-    [key in KeyCodes]: (player: Player) => void;
-};
-
-export type PlayerControl = {
-    keyUp: Partial<Controls>;
-    keyDown: Partial<Controls>;
-};
+export type Controls<T> = Map<T extends KeyCodes ? T : string, boolean>;
 
 export type MovementProperties = {
     x: number;
@@ -129,6 +120,7 @@ export interface PlayerSettings {
     speed: MovementProperties;
     initialAcceleration: MovementProperties;
     currentAcceleration: MovementProperties;
+    friction: number;
     id: string;
     DEBUG?: boolean;
 }

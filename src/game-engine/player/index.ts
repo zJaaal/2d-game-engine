@@ -1,4 +1,4 @@
-import { KeyCodes, MovementProperties, PlayerControl, PlayerSettings } from './types';
+import { Controls, KeyCodes, MovementProperties, PlayerSettings } from './types';
 
 export class Player {
     x: number;
@@ -8,8 +8,6 @@ export class Player {
     currentAcceleration: MovementProperties;
     protected DEBUG: boolean;
     id: string;
-
-    protected controls?: Partial<PlayerControl>;
 
     constructor({
         x,
@@ -33,27 +31,7 @@ export class Player {
         throw new Error('Method not implemented: drawPlayer');
     }
 
-    private logKeyWarning(key: string) {
-        this.DEBUG && console.warn(`Key ${key} not implemented`);
-    }
-
-    handleKeyDown(code: KeyCodes) {
-        const key = code as keyof PlayerControl['keyDown'];
-
-        if (this.controls?.keyDown?.[key]) {
-            this.controls?.keyDown?.[key]?.(this);
-        } else {
-            this.logKeyWarning(key);
-        }
-    }
-
-    handleKeyUp(code: KeyCodes) {
-        const key = code as keyof PlayerControl['keyUp'];
-
-        if (this.controls?.keyUp?.[key]) {
-            this.controls?.keyUp?.[key]?.(this);
-        } else {
-            this.logKeyWarning(key);
-        }
+    handleControls(_controlMap: Controls<KeyCodes>) {
+        throw new Error('Method not implemented: handleControls');
     }
 }

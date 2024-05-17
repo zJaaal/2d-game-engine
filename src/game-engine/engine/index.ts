@@ -1,6 +1,6 @@
 import { Entity } from '../Entity';
 import { Player } from '../player';
-import { KeyCodes } from '../player/types';
+import { Controls, KeyCodes } from '../player/types';
 import { CanvasSettings, EngineSettings } from './types';
 
 export class Engine {
@@ -9,7 +9,7 @@ export class Engine {
     canvas?: HTMLCanvasElement;
     ctx?: CanvasRenderingContext2D | null;
 
-    pressedKeys: Set<KeyCodes> = new Set();
+    pressedKeys: Controls<KeyCodes> = new Map<KeyCodes, boolean>();
 
     constructor(settings: EngineSettings) {
         this.canvasSettings = settings.canvas;
@@ -21,13 +21,11 @@ export class Engine {
         this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
 
         this.canvas.addEventListener('keydown', (e) => {
-            this.pressedKeys.add(e.code as KeyCodes);
+            this.pressedKeys.set(e.code as KeyCodes, true);
         });
 
         this.canvas.addEventListener('keyup', (e) => {
-            console.log('keyup', e.code);
-
-            this.pressedKeys.delete(e.code as KeyCodes);
+            this.pressedKeys.set(e.code as KeyCodes, false);
         });
     }
 
@@ -45,9 +43,7 @@ export class Engine {
                 entity.drawEntity(this.ctx as CanvasRenderingContext2D);
             });
 
-            this.pressedKeys.forEach((key) => {
-                player.handleKeyDown(key);
-            });
+            player.handleControls(this.pressedKeys);
 
             requestAnimationFrame(mainLoop);
         };

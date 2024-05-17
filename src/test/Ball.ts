@@ -1,7 +1,7 @@
 import { Entity } from '../game-engine/Entity';
 import { EntitySettings } from '../game-engine/Entity/types';
 import { Player } from '../game-engine/player';
-import { KeyCodes, PlayerSettings } from '../game-engine/player/types';
+import { Controls, KeyCodes, PlayerSettings } from '../game-engine/player/types';
 
 export enum BallControlMap {
     UP = KeyCodes.KEY_W,
@@ -46,9 +46,11 @@ export class Ball extends Player {
         color,
         strokeColor,
         initialAcceleration,
-        currentAcceleration
+        currentAcceleration,
+        friction,
+        DEBUG
     }: BallSettings) {
-        super({ x, y, speed, id, initialAcceleration, currentAcceleration });
+        super({ x, y, speed, id, initialAcceleration, currentAcceleration, friction, DEBUG });
 
         this.ballSettings = {
             x,
@@ -61,30 +63,8 @@ export class Ball extends Player {
             color,
             strokeColor,
             initialAcceleration,
-            currentAcceleration
-        };
-
-        this.controls = {
-            keyDown: {
-                [BallControlMap.UP]: this.moveUp.bind(this),
-                [BallControlMap.DOWN]: this.moveDown.bind(this),
-                [BallControlMap.LEFT]: this.moveLeft.bind(this),
-                [BallControlMap.RIGHT]: this.moveRight.bind(this),
-                [BallControlMap.ALT_UP]: this.moveUp.bind(this),
-                [BallControlMap.ALT_DOWN]: this.moveDown.bind(this),
-                [BallControlMap.ALT_LEFT]: this.moveLeft.bind(this),
-                [BallControlMap.ALT_RIGHT]: this.moveRight.bind(this)
-            },
-            keyUp: {
-                [BallControlMap.UP]: this.resetVerticalMovement.bind(this),
-                [BallControlMap.DOWN]: this.resetVerticalMovement.bind(this),
-                [BallControlMap.LEFT]: this.resetSidewaysMovement.bind(this),
-                [BallControlMap.RIGHT]: this.resetSidewaysMovement.bind(this),
-                [BallControlMap.ALT_UP]: this.resetVerticalMovement.bind(this),
-                [BallControlMap.ALT_DOWN]: this.resetVerticalMovement.bind(this),
-                [BallControlMap.ALT_LEFT]: this.resetSidewaysMovement.bind(this),
-                [BallControlMap.ALT_RIGHT]: this.resetSidewaysMovement.bind(this)
-            }
+            currentAcceleration,
+            friction
         };
     }
 
@@ -104,49 +84,66 @@ export class Ball extends Player {
         ctx.stroke();
         ctx.fillStyle = color;
         ctx.fill();
+
+        if (this.DEBUG) {
+            ctx.beginPath();
+
+            ctx.moveTo(this.x, this.y);
+            ctx.lineTo(
+                this.x + this.currentAcceleration.x * 100,
+                this.y + this.currentAcceleration.y * 100
+            );
+            ctx.strokeStyle = 'green';
+            ctx.stroke();
+
+            ctx.beginPath();
+
+            ctx.moveTo(this.x, this.y);
+            ctx.lineTo(this.x + this.speed.x * 10, this.y + this.speed.y * 10);
+            ctx.strokeStyle = 'blue';
+            ctx.stroke();
+        }
     }
 
-    private moveUp() {
-        this.currentAcceleration.y = -this.initialAcceleration.y;
+    override handleControls(controlMap: Controls<BallControlMap>): void {
+        const UP = controlMap.get(BallControlMap.UP) || controlMap.get(BallControlMap.ALT_UP);
+        const DOWN = controlMap.get(BallControlMap.DOWN) || controlMap.get(BallControlMap.ALT_DOWN);
+        const LEFT = controlMap.get(BallControlMap.LEFT) || controlMap.get(BallControlMap.ALT_LEFT);
+        const RIGHT =
+            controlMap.get(BallControlMap.RIGHT) || controlMap.get(BallControlMap.ALT_RIGHT);
 
-        this.speed.y += this.currentAcceleration.y;
+        if (UP) {
+            this.currentAcceleration.y = -this.initialAcceleration.y;
+        }
 
-        this.y += this.speed.y;
-    }
+        if (DOWN) {
+            this.currentAcceleration.y = this.initialAcceleration.y;
+        }
 
-    private moveDown() {
-        this.currentAcceleration.y = this.initialAcceleration.y;
+        if (LEFT) {
+            this.currentAcceleration.x = -this.initialAcceleration.x;
+        }
 
-        this.speed.y += this.currentAcceleration.y;
+        if (RIGHT) {
+            this.currentAcceleration.x = this.initialAcceleration.x;
+        }
 
-        this.y += this.speed.y;
-    }
+        if (!UP && !DOWN) {
+            this.currentAcceleration.y = 0;
+        }
 
-    private moveLeft() {
-        this.currentAcceleration.x = -this.initialAcceleration.x;
+        if (!LEFT && !RIGHT) {
+            this.currentAcceleration.x = 0;
+        }
 
         this.speed.x += this.currentAcceleration.x;
+        this.speed.y += this.currentAcceleration.y;
+
+        this.speed.x *= 1 - this.ballSettings.friction;
+        this.speed.y *= 1 - this.ballSettings.friction;
 
         this.x += this.speed.x;
-    }
-
-    private moveRight() {
-        this.currentAcceleration.x = this.initialAcceleration.x;
-
-        this.speed.x += this.currentAcceleration.x;
-
-        this.x += this.speed.x;
-    }
-
-    private resetSidewaysMovement() {
-        this.currentAcceleration.x = 0;
-        this.speed.x = 0;
-    }
-
-    private resetVerticalMovement() {
-        this.currentAcceleration.y = 0;
-
-        this.speed.y = 0;
+        this.y += this.speed.y;
     }
 }
 
