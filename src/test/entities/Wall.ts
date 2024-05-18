@@ -1,7 +1,6 @@
 import { Vector } from '../../game-engine/physics/vector';
 import { Entity } from '../../game-engine/entity';
 
-import { createRotationMatrix } from '../utils';
 import { WallSettings } from './types';
 import { Ball } from './Ball';
 
@@ -9,55 +8,27 @@ export class Wall extends Entity {
     start: Vector;
     end: Vector;
     color: string;
-    center: Vector;
-    length: number;
-    refEnd: Vector;
-    refStart: Vector;
-    refUnit: Vector;
 
-    constructor({
-        position,
-        end,
-        id,
-        color,
-        elasticity,
-        angle,
-        rotationFactor,
-        friction,
-        start
-    }: WallSettings) {
+    constructor({ position, end, id, color, elasticity, start }: WallSettings) {
         super({
             position: position ?? new Vector(0, 0),
             elasticity: elasticity ?? 1,
             speed: new Vector(0, 0),
             acceleration: new Vector(0, 0),
             accelerationFactor: 1,
-            friction: friction ?? 0,
+            friction: 0,
             mass: 0,
             id: 'Wall-' + id,
-            rotationFactor: rotationFactor ?? 0,
-            angle: angle ?? 0
+            rotationFactor: 0,
+            angle: 0
         });
 
         this.end = end;
         this.start = start;
         this.color = color;
-
-        this.refStart = new Vector(this.start.x, this.start.y);
-        this.refEnd = new Vector(this.end.x, this.end.y);
-
-        this.center = this.start.add(this.end).multiply(0.5);
-        this.length = this.end.subtract(this.start).magnitude();
-        this.refUnit = this.end.subtract(this.start).unit();
     }
 
     drawEntity(ctx: CanvasRenderingContext2D): void {
-        let rotationMatrix = createRotationMatrix(this.angle);
-        let newDirection = rotationMatrix.multiplyVector(this.refUnit);
-
-        this.start = this.center.subtract(newDirection.multiply(this.length / 2));
-        this.end = this.center.add(newDirection.multiply(this.length / 2));
-
         ctx.beginPath();
         ctx.strokeStyle = this.color;
         ctx.moveTo(this.start.x, this.start.y);

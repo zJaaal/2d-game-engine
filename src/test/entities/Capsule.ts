@@ -1,7 +1,8 @@
 import { Entity } from '../../game-engine/entity';
 import { Controls } from '../../game-engine/entity/types';
+import { createRotationMatrix } from '../../game-engine/physics/matrix';
 import { Vector } from '../../game-engine/physics/vector';
-import { createRotationMatrix } from '../utils';
+
 import { CapsuleSettings, LinearMovementMap } from './types';
 
 export class Capsule extends Entity {
