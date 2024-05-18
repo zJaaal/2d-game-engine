@@ -1,5 +1,4 @@
 import { Vector } from '../game-engine/Vector';
-import { Entity } from '../game-engine/entity';
 import { Ball, BallSettings, EntityBall } from './Ball';
 import { Wall } from './Wall';
 

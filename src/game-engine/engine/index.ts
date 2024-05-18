@@ -1,7 +1,6 @@
 import { Ball } from '../../test/Ball';
 import { Wall } from '../../test/Wall';
 import {
-    closestPointFromBallToWall,
     collisionResolution,
     collisionResolutionWithWall,
     detectCollision,
