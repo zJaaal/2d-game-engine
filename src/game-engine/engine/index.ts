@@ -1,13 +1,16 @@
-import { Ball } from '../../test/entities/Ball';
-import { Wall } from '../../test/entities/Wall';
 import {
+    Ball,
     collisionResolution,
-    collisionResolutionWithWall,
     detectCollision,
+    penetrationResolution
+} from '../../test/entities/Ball';
+import {
+    Wall,
+    collisionResolutionWithWall,
     detectCollisionWithWall,
-    penetrationResolution,
     penetrationResolutionWithWall
-} from '../../test/utils';
+} from '../../test/entities/Wall';
+
 import { Vector } from '../physics/Vector';
 
 import { Controls, KeyCodes } from '../entity/types';

@@ -3,6 +3,7 @@ import { Entity } from '../../game-engine/entity';
 import { Controls } from '../../game-engine/entity/types';
 import { createRotationMatrix } from '../utils';
 import { WallSettings, WallControls } from './types';
+import { Ball } from './Ball';
 
 export class Wall extends Entity {
     endPosition: Vector;
@@ -87,4 +88,51 @@ export class Wall extends Entity {
         this.angle += this.angleSpeed;
         this.angleSpeed *= 1 - this.friction;
     }
+}
+
+export function closestPointFromBallToWall(ball: Ball, wall: Wall) {
+    let ballToWallStart = wall.position.subtract(ball.position);
+
+    if (Vector.dot(wall.wallUnit(), ballToWallStart) > 0) {
+        return wall.position;
+    }
+
+    let wallEndToBall = ball.position.subtract(wall.endPosition);
+
+    if (Vector.dot(wall.wallUnit(), wallEndToBall) > 0) {
+        return wall.endPosition;
+    }
+
+    let closestDistanceToWall = Vector.dot(wall.wallUnit(), ballToWallStart);
+    let closestVector = wall.wallUnit().multiply(closestDistanceToWall);
+
+    return wall.position.subtract(closestVector);
+}
+
+export function detectCollisionWithWall(ball: Ball, wall: Wall) {
+    let closestPoint = closestPointFromBallToWall(ball, wall).subtract(ball.position);
+
+    return closestPoint.magnitude() <= ball.radius;
+}
+
+export function penetrationResolutionWithWall(ball: Ball, wall: Wall) {
+    let penetrationVector = ball.position.subtract(closestPointFromBallToWall(ball, wall));
+
+    let collisionDepth = ball.radius - penetrationVector.magnitude();
+
+    let penetrationResolution = penetrationVector.unit().multiply(collisionDepth);
+
+    ball.position = ball.position.add(penetrationResolution);
+}
+
+export function collisionResolutionWithWall(ball: Ball, wall: Wall) {
+    let normal = ball.position.subtract(closestPointFromBallToWall(ball, wall)).unit();
+
+    let separatingVelocity = Vector.dot(ball.speed, normal);
+
+    let newSeparatingVelocity = -separatingVelocity * ball.elasticity;
+
+    let separatingVelocityDiff = separatingVelocity - newSeparatingVelocity;
+
+    ball.speed = ball.speed.add(normal.multiply(-separatingVelocityDiff));
 }

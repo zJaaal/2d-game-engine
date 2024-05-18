@@ -1,5 +1,6 @@
 import { Entity } from '../../game-engine/entity';
 import { Controls } from '../../game-engine/entity/types';
+import { Vector } from '../../game-engine/physics/Vector';
 import { BallSettings, FULL_DEGREES, BallControlMap } from './types';
 
 export class Ball extends Entity {
@@ -117,4 +118,43 @@ export class Ball extends Entity {
 
         this.position = this.position.add(this.speed);
     }
+}
+
+export function detectCollision(b1: Ball, b2: Ball) {
+    // The distance between the two balls is less than the sum of their radius
+    return b1.radius + b2.radius > b1.position.subtract(b2.position).magnitude();
+}
+
+export function penetrationResolution(b1: Ball, b2: Ball) {
+    let distanceBetween = b1.position.subtract(b2.position);
+
+    // The depth of the collision is the sum of the radius minus the distance between the two balls
+    let collisionDepth = b1.radius + b2.radius - distanceBetween.magnitude();
+
+    // The collision resolution is the unit vector of the distance between the two balls multiplied by half the collision depth
+    let penetrationResolution = distanceBetween
+        .unit()
+        .multiply(collisionDepth / (b1.inverseMass + b2.inverseMass));
+
+    // Move the balls apart by the collision resolution
+    b1.position = b1.position.add(penetrationResolution.multiply(b1.inverseMass));
+    b2.position = b2.position.add(penetrationResolution.multiply(-b2.inverseMass));
+}
+
+// I need to understand this better, I remember a bit about this from my physics classes
+export function collisionResolution(b1: Ball, b2: Ball) {
+    let normal = b1.position.subtract(b2.position).unit();
+    let relativeVelocity = b1.speed.subtract(b2.speed);
+    let separatingVelocity = Vector.dot(relativeVelocity, normal);
+
+    let newSeparatingVelocity = -separatingVelocity * Math.min(b1.elasticity, b2.elasticity);
+
+    let separatingVelocityDiff = newSeparatingVelocity - separatingVelocity;
+
+    let impulse = separatingVelocityDiff / (b1.inverseMass + b2.inverseMass);
+
+    let impulseVector = normal.multiply(impulse);
+
+    b1.speed = b1.speed.add(impulseVector.multiply(b1.inverseMass));
+    b2.speed = b2.speed.add(impulseVector.multiply(-b2.inverseMass));
 }
