@@ -1,5 +1,5 @@
 import { KeyCodes, EntitySettings } from '../../game-engine/entity/types';
-import { Vector } from '../../game-engine/physics/Vector';
+import { Vector } from '../../game-engine/physics/vector';
 
 export enum BallControlMap {
     UP = KeyCodes.KEY_W,
@@ -22,6 +22,13 @@ export interface BallSettings extends EntitySettings {
 
 export interface WallSettings extends Partial<EntitySettings> {
     endPosition: Vector;
+    color: string;
+}
+
+export interface CapsuleSettings extends EntitySettings {
+    endPosition: Vector;
+    radius: number;
+    strokeColor: string;
     color: string;
 }
 

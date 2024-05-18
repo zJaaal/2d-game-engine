@@ -6,11 +6,14 @@ import {
     RNGPosition,
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
-    genRandomWalls
+    genRandomWalls,
+    genRandomCapsules
 } from './test/utils';
 import { CanvasSettings, DebugEntity } from './game-engine/engine/types';
-import { Vector } from './game-engine/physics/Vector';
-import { BallSettings } from './test/entities/types';
+import { Vector } from './game-engine/physics/vector';
+
+import { BallSettings, CapsuleSettings } from './test/entities/types';
+import { Wall } from './test/entities/Wall';
 
 const canvasSettings: CanvasSettings = {
     width: CANVAS_WIDTH,
@@ -19,29 +22,45 @@ const canvasSettings: CanvasSettings = {
     id: 'game'
 };
 
-const ballSettings: BallSettings = {
+const sharedSettings = {
     position: RNGPosition(),
     speed: new Vector(0, 0),
     accelerationFactor: 1,
     elasticity: 1,
     mass: 40 * 0.06,
     acceleration: new Vector(0, 0),
-    id: 'MainBall',
-    radius: 40,
-    color: 'transparent',
-    strokeColor: 'black',
-    DEBUG: true,
     friction: 0.1,
     angle: 0,
     rotationFactor: 0.1
 };
 
-const ball = new Ball(ballSettings);
+const ballInitialSettings: BallSettings = {
+    ...sharedSettings,
+    id: 'MainBall',
+    radius: 40,
+    color: 'transparent',
+    strokeColor: 'black',
+    DEBUG: true
+};
 
-const entities = genRandomBalls(20, ballSettings);
-// const entities: Ball[] = [];
+const capsuleInitialSettings: CapsuleSettings = {
+    ...sharedSettings,
+    id: 'MainCapsule',
+    endPosition: new Vector(100, 100),
+    radius: 40,
+    color: 'transparent',
+    strokeColor: 'black'
+};
 
-const walls = genRandomWalls(5);
+const ball = new Ball(ballInitialSettings);
+
+// const balls = genRandomBalls(20, ballInitialSettings);
+const balls: Ball[] = [];
+
+const capsules = genRandomCapsules(5, capsuleInitialSettings);
+
+// const walls = genRandomWalls(5);
+const walls: Wall[] = [];
 
 const engine = new Engine({
     canvas: canvasSettings,
@@ -58,4 +77,4 @@ const debugEntity: DebugEntity = (ctx, entity, engine, i) => {
     );
 };
 
-engine.initMainLoop(ball, entities, walls, debugEntity);
+engine.initMainLoop(ball, balls, walls, capsules, debugEntity);

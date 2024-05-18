@@ -1,6 +1,6 @@
 import { Entity } from '../../game-engine/entity';
 import { Controls } from '../../game-engine/entity/types';
-import { Vector } from '../../game-engine/physics/Vector';
+import { Vector } from '../../game-engine/physics/vector';
 import { BallSettings, FULL_DEGREES, BallControlMap } from './types';
 
 export class Ball extends Entity {

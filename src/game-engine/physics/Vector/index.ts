@@ -39,6 +39,10 @@ export class Vector {
         return v1.x * v2.x + v1.y * v2.y;
     }
 
+    static cross(v1: Vector, v2: Vector) {
+        return v1.x * v2.y - v1.y * v2.x;
+    }
+
     draw({ x, y, color, scalar, ctx }: DrawVector) {
         ctx.strokeStyle = color;
         ctx.beginPath();

@@ -11,10 +11,11 @@ import {
     penetrationResolutionWithWall
 } from '../../test/entities/Wall';
 
-import { Vector } from '../physics/Vector';
+import { Vector } from '../physics/vector';
 
 import { Controls, KeyCodes } from '../entity/types';
 import { CanvasSettings, DebugEntity, EngineSettings } from './types';
+import { Capsule } from '../../test/entities/Capsule';
 
 export class Engine {
     canvasSettings: CanvasSettings;
@@ -47,17 +48,23 @@ export class Engine {
         });
     }
 
-    initMainLoop(ball: Ball, entities: Ball[], walls: Wall[], debugEntity?: DebugEntity) {
+    initMainLoop(
+        mainBall: Ball,
+        balls: Ball[],
+        walls: Wall[],
+        capsules: Capsule[],
+        debugEntity?: DebugEntity
+    ) {
         if (!this.ctx) {
             throw new Error('Canvas context is not initialized');
         }
 
         const loop = () => {
-            ball.handleControls(this.pressedKeys);
+            mainBall.handleControls(this.pressedKeys);
             this.ctx!.clearRect(0, 0, this.canvasSettings.width, this.canvasSettings.height);
             this.ctx!.font = '16px Arial';
 
-            const fullEntities = [ball, ...entities];
+            const fullEntities = [mainBall, ...balls];
 
             fullEntities.forEach((entity, i) => {
                 entity.drawEntity(this.ctx as CanvasRenderingContext2D);
@@ -79,7 +86,7 @@ export class Engine {
 
                 entity.reposition();
 
-                this.distanceVectors[i] = entity.position.subtract(ball.position);
+                this.distanceVectors[i] = entity.position.subtract(mainBall.position);
 
                 this.DEBUG && debugEntity?.(this.ctx as CanvasRenderingContext2D, entity, this, i);
             });
@@ -88,6 +95,12 @@ export class Engine {
                 wall.drawEntity(this.ctx as CanvasRenderingContext2D);
                 wall.handleControls(this.pressedKeys);
                 wall.reposition();
+            });
+
+            capsules.forEach((capsule) => {
+                capsule.drawEntity(this.ctx as CanvasRenderingContext2D);
+                capsule.handleControls(this.pressedKeys);
+                capsule.reposition();
             });
 
             requestAnimationFrame(loop);

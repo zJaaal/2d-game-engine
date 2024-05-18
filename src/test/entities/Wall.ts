@@ -1,4 +1,4 @@
-import { Vector } from '../../game-engine/physics/Vector';
+import { Vector } from '../../game-engine/physics/vector';
 import { Entity } from '../../game-engine/entity';
 import { Controls } from '../../game-engine/entity/types';
 import { createRotationMatrix } from '../utils';

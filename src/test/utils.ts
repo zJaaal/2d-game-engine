@@ -1,9 +1,10 @@
-import { Vector } from '../game-engine/physics/Vector';
+import { Vector } from '../game-engine/physics/vector';
 import { Matrix } from '../game-engine/physics/matrix';
 import { Ball } from './entities/Ball';
+import { Capsule } from './entities/Capsule';
 
 import { Wall } from './entities/Wall';
-import { BallSettings } from './entities/types';
+import { BallSettings, CapsuleSettings } from './entities/types';
 
 export const PADDING = 100;
 export const ASPECT_RATIO = 1.7; // 16:9
@@ -73,4 +74,30 @@ export function createRotationMatrix(angle: number) {
     matrix.data[1][1] = Math.cos(angle);
 
     return matrix;
+}
+
+export function genRandomCapsules(n: number, capsuleSettings: CapsuleSettings) {
+    const capsules = [];
+    for (let i = 0; i < n; i++) {
+        let radius = Math.random() * 50 + 20;
+
+        let mass = radius * 0.06;
+
+        let elasticity = Math.random();
+
+        capsules.push(
+            new Capsule({
+                ...capsuleSettings,
+                radius,
+                mass,
+                elasticity,
+                position: RNGPosition(),
+                endPosition: RNGPosition(),
+                id: `capsule-${i}`,
+                color: RNGColor(),
+                strokeColor: RNGColor()
+            })
+        );
+    }
+    return capsules;
 }
