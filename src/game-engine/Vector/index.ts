@@ -39,7 +39,7 @@ export class Vector {
         return v1.x * v2.x + v1.y * v2.y;
     }
 
-    drawVector({ x, y, color, scalar, ctx }: DrawVector) {
+    draw({ x, y, color, scalar, ctx }: DrawVector) {
         ctx.strokeStyle = color;
         ctx.beginPath();
         ctx.moveTo(x, y);

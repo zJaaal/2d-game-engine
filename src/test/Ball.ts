@@ -83,39 +83,22 @@ export class Ball extends Entity {
         ctx.fill();
 
         if (this.DEBUG) {
-            const DEBUG_X = ctx.canvas.width - 100;
-            const DEBUG_Y = ctx.canvas.height - 100;
-
             ctx.beginPath();
-            this.acceleration.unit().drawVector({
-                x: DEBUG_X,
-                y: DEBUG_Y,
+            this.acceleration.unit().draw({
+                x: this.position.x,
+                y: this.position.y,
                 color: 'blue',
                 scalar: 50,
                 ctx
             });
 
-            this.speed.drawVector({
-                x: DEBUG_X,
-                y: DEBUG_Y,
+            this.speed.draw({
+                x: this.position.x,
+                y: this.position.y,
                 color: 'green',
                 scalar: 10,
                 ctx
             });
-
-            this.acceleration.normal().drawVector({
-                x: DEBUG_X,
-                y: DEBUG_Y,
-                color: 'black',
-                scalar: 50,
-                ctx
-            });
-            ctx.beginPath();
-
-            ctx.arc(DEBUG_X, DEBUG_Y, 50, this.startAngle, this.endAngle);
-
-            ctx.strokeStyle = this.strokeColor;
-            ctx.stroke();
         }
     }
 

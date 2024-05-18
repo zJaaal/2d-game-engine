@@ -1,14 +1,18 @@
-import { Vector } from '../Vector';
-import { Entity } from '../entity';
-import { Controls, KeyCodes } from '../entity/types';
+import { Ball } from '../../test/Ball';
+import { Wall } from '../../test/Wall';
 import {
-    CanvasSettings,
-    PenetrationResolution,
-    DebugEntity,
-    DetectCollision,
-    EngineSettings,
-    CollisionResolution
-} from './types';
+    closestPointFromBallToWall,
+    collisionResolution,
+    collisionResolutionWithWall,
+    detectCollision,
+    detectCollisionWithWall,
+    penetrationResolution,
+    penetrationResolutionWithWall
+} from '../../test/utils';
+import { Vector } from '../Vector';
+
+import { Controls, KeyCodes } from '../entity/types';
+import { CanvasSettings, DebugEntity, EngineSettings } from './types';
 
 export class Engine {
     canvasSettings: CanvasSettings;
@@ -20,8 +24,11 @@ export class Engine {
 
     distanceVectors: Vector[] = [];
 
+    DEBUG = false;
+
     constructor(settings: EngineSettings) {
         this.canvasSettings = settings.canvas;
+        this.DEBUG = settings.DEBUG;
     }
 
     initEngine() {
@@ -38,39 +45,45 @@ export class Engine {
         });
     }
 
-    initMainLoop<T extends Entity>(
-        mainEntity: T,
-        entities: T[],
-        detectCollision: DetectCollision<T>,
-        penetrationResolution: PenetrationResolution<T>,
-        collisionResolution: CollisionResolution<T>,
-        debugEntity?: DebugEntity<T>
-    ) {
+    initMainLoop(ball: Ball, entities: Ball[], walls: Wall[], debugEntity?: DebugEntity) {
         if (!this.ctx) {
             throw new Error('Canvas context is not initialized');
         }
 
         const loop = () => {
-            mainEntity.handleControls(this.pressedKeys);
+            ball.handleControls(this.pressedKeys);
             this.ctx!.clearRect(0, 0, this.canvasSettings.width, this.canvasSettings.height);
             this.ctx!.font = '16px Arial';
 
-            [mainEntity, ...entities].forEach((entity, i) => {
+            const fullEntities = [ball, ...entities];
+
+            fullEntities.forEach((entity, i) => {
                 entity.drawEntity(this.ctx as CanvasRenderingContext2D);
 
+                walls.forEach((wall) => {
+                    if (detectCollisionWithWall(entity, wall)) {
+                        penetrationResolutionWithWall(entity, wall);
+                        collisionResolutionWithWall(entity, wall);
+                    }
+                });
+
                 // This is inefficient, but it's fine for now
-                for (let j = i; j < entities.length; j++) {
-                    if (detectCollision(entity, entities[j])) {
-                        penetrationResolution(entity, entities[j]);
-                        collisionResolution(entity, entities[j]);
+                for (let j = i; j < fullEntities.length; j++) {
+                    if (detectCollision(entity, fullEntities[j])) {
+                        penetrationResolution(entity, fullEntities[j]);
+                        collisionResolution(entity, fullEntities[j]);
                     }
                 }
 
                 entity.reposition();
 
-                this.distanceVectors[i] = entity.position.subtract(mainEntity.position);
+                this.distanceVectors[i] = entity.position.subtract(ball.position);
 
-                debugEntity?.(this.ctx as CanvasRenderingContext2D, entity, this, i);
+                this.DEBUG && debugEntity?.(this.ctx as CanvasRenderingContext2D, entity, this, i);
+            });
+
+            walls.forEach((wall) => {
+                wall.drawEntity(this.ctx as CanvasRenderingContext2D);
             });
 
             requestAnimationFrame(loop);

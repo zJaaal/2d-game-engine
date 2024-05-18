@@ -2,13 +2,11 @@ import './style.css';
 import { Engine } from './game-engine/engine';
 import { Ball, BallSettings } from './test/Ball';
 import {
-    penetrationResolution,
-    detectCollision,
     genEntityBalls,
-    collisionResolution,
     RNGPosition,
     CANVAS_HEIGHT,
-    CANVAS_WIDTH
+    CANVAS_WIDTH,
+    genRandomWalls
 } from './test/utils';
 import { CanvasSettings, DebugEntity } from './game-engine/engine/types';
 import { Vector } from './game-engine/Vector';
@@ -24,12 +22,12 @@ const ballSettings: BallSettings = {
     position: RNGPosition(),
     speed: new Vector(0, 0),
     accelerationFactor: 1,
-    elasticity: Math.random(),
-    mass: 50 * 0.06,
+    elasticity: 1,
+    mass: 40 * 0.06,
     acceleration: new Vector(0, 0),
     id: 'MainBall',
-    radius: 50,
-    color: 'red',
+    radius: 40,
+    color: 'transparent',
     strokeColor: 'black',
     DEBUG: true,
     friction: 0.1
@@ -37,16 +35,19 @@ const ballSettings: BallSettings = {
 
 const ball = new Ball(ballSettings);
 
-const entityBalls = genEntityBalls(20, ballSettings);
-// const entityBalls: Entity[] = [];
+const entities = genEntityBalls(20, ballSettings);
+// const entities: Ball[] = [];
+
+const walls = genRandomWalls(4);
 
 const engine = new Engine({
-    canvas: canvasSettings
+    canvas: canvasSettings,
+    DEBUG: false
 });
 
 engine.initEngine();
 
-const debugEntity: DebugEntity<Ball> = (ctx, entity, engine, i) => {
+const debugEntity: DebugEntity = (ctx, entity, engine, i) => {
     ctx!.fillText(
         `Mass: ${entity.mass.toFixed(2)}\nElasticity: ${entity.elasticity.toFixed(2)}`,
         entity.position.x + entity.radius,
@@ -54,11 +55,4 @@ const debugEntity: DebugEntity<Ball> = (ctx, entity, engine, i) => {
     );
 };
 
-engine.initMainLoop(
-    ball,
-    entityBalls,
-    detectCollision,
-    penetrationResolution,
-    collisionResolution,
-    debugEntity
-);
+engine.initMainLoop(ball, entities, walls, debugEntity);

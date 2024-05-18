@@ -1,5 +1,7 @@
 import { Vector } from '../game-engine/Vector';
+import { Entity } from '../game-engine/entity';
 import { Ball, BallSettings, EntityBall } from './Ball';
+import { Wall } from './Wall';
 
 export const PADDING = 100;
 export const ASPECT_RATIO = 1.7; // 16:9
@@ -14,6 +16,8 @@ export const RNGPosition = () =>
         Math.random() * (CANVAS_HEIGHT - CANVAS_ENTITY_PADDING)
     );
 
+export const RNGColor = () =>
+    `rgb(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255})`;
 export function genEntityBalls(n: number, ballSettings: BallSettings): EntityBall[] {
     const balls = [];
     for (let i = 0; i <= n; i++) {
@@ -21,7 +25,7 @@ export function genEntityBalls(n: number, ballSettings: BallSettings): EntityBal
 
         let mass = radius * 0.06;
 
-        let elasticity = Math.random();
+        let elasticity = Math.random() * 3;
 
         balls.push(
             new EntityBall({
@@ -31,14 +35,75 @@ export function genEntityBalls(n: number, ballSettings: BallSettings): EntityBal
                 elasticity,
                 position: RNGPosition(),
                 id: `ball-${i}`,
-                color: `rgb(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255})`,
-                strokeColor: `rgb(${Math.random() * 255},${Math.random() * 255},${
-                    Math.random() * 255
-                })`
+                color: RNGColor(),
+                strokeColor: RNGColor()
             })
         );
     }
     return balls;
+}
+
+export function genRandomWalls(n: number) {
+    const walls = [];
+    for (let i = 0; i <= n; i++) {
+        walls.push(
+            new Wall({
+                position: RNGPosition(),
+                endPosition: RNGPosition(),
+                id: `wall-${i}`,
+                color: RNGColor(),
+                elasticity: 0
+            })
+        );
+    }
+    return walls;
+}
+
+export function closestPointFromBallToWall(ball: Ball, wall: Wall) {
+    let ballToWallStart = wall.position.subtract(ball.position);
+
+    if (Vector.dot(wall.wallUnit(), ballToWallStart) > 0) {
+        return wall.position;
+    }
+
+    let wallEndToBall = ball.position.subtract(wall.endPosition);
+
+    if (Vector.dot(wall.wallUnit(), wallEndToBall) > 0) {
+        return wall.endPosition;
+    }
+
+    let closestDistanceToWall = Vector.dot(wall.wallUnit(), ballToWallStart);
+    let closestVector = wall.wallUnit().multiply(closestDistanceToWall);
+
+    return wall.position.subtract(closestVector);
+}
+
+export function detectCollisionWithWall(ball: Ball, wall: Wall) {
+    let closestPoint = closestPointFromBallToWall(ball, wall).subtract(ball.position);
+
+    return closestPoint.magnitude() <= ball.radius;
+}
+
+export function penetrationResolutionWithWall(ball: Ball, wall: Wall) {
+    let penetrationVector = ball.position.subtract(closestPointFromBallToWall(ball, wall));
+
+    let collisionDepth = ball.radius - penetrationVector.magnitude();
+
+    let penetrationResolution = penetrationVector.unit().multiply(collisionDepth);
+
+    ball.position = ball.position.add(penetrationResolution);
+}
+
+export function collisionResolutionWithWall(ball: Ball, wall: Wall) {
+    let normal = ball.position.subtract(closestPointFromBallToWall(ball, wall)).unit();
+
+    let separatingVelocity = Vector.dot(ball.speed, normal);
+
+    let newSeparatingVelocity = -separatingVelocity * ball.elasticity;
+
+    let separatingVelocityDiff = separatingVelocity - newSeparatingVelocity;
+
+    ball.speed = ball.speed.add(normal.multiply(-separatingVelocityDiff));
 }
 
 export function detectCollision(b1: Ball, b2: Ball) {

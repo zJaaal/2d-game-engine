@@ -1,7 +1,9 @@
 import { Engine } from '.';
+import { Ball } from '../../test/Ball';
 
 export interface EngineSettings {
     canvas: CanvasSettings;
+    DEBUG: boolean;
 }
 
 export interface CanvasSettings {
@@ -11,9 +13,9 @@ export interface CanvasSettings {
     styleClass: string;
 }
 
-export type DebugEntity<T> = (
+export type DebugEntity = (
     ctx: CanvasRenderingContext2D,
-    entity: T,
+    entity: Ball,
     engine: Engine,
     entityIndex: number
 ) => void;
