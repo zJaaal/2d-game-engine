@@ -1,11 +1,9 @@
 import {
-    Ball,
     collisionResolution,
     detectCollision,
     penetrationResolution
 } from '../../test/entities/Ball';
 import {
-    Wall,
     collisionResolutionWithWall,
     detectCollisionWithWall,
     penetrationResolutionWithWall
@@ -14,8 +12,7 @@ import {
 import { Vector } from '../physics/vector';
 
 import { Controls, KeyCodes } from '../entity/types';
-import { CanvasSettings, DebugEntity, EngineSettings } from './types';
-import { Capsule } from '../../test/entities/Capsule';
+import { CanvasSettings, EngineSettings, MainLoopArgs } from './types';
 
 export class Engine {
     canvasSettings: CanvasSettings;
@@ -48,13 +45,7 @@ export class Engine {
         });
     }
 
-    initMainLoop(
-        mainBall: Ball,
-        balls: Ball[],
-        walls: Wall[],
-        capsules: Capsule[],
-        debugEntity?: DebugEntity
-    ) {
+    initMainLoop({ mainBall, balls = [], walls = [], capsules = [], debugEntity }: MainLoopArgs) {
         if (!this.ctx) {
             throw new Error('Canvas context is not initialized');
         }
@@ -93,14 +84,15 @@ export class Engine {
 
             walls.forEach((wall) => {
                 wall.drawEntity(this.ctx as CanvasRenderingContext2D);
-                wall.handleControls(this.pressedKeys);
-                wall.reposition();
             });
 
             capsules.forEach((capsule) => {
                 capsule.drawEntity(this.ctx as CanvasRenderingContext2D);
-                capsule.handleControls(this.pressedKeys);
-                capsule.reposition();
+
+                if (capsule.id === 'MainCapsule') {
+                    capsule.handleControls(this.pressedKeys);
+                    capsule.reposition();
+                }
             });
 
             requestAnimationFrame(loop);

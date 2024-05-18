@@ -1,5 +1,7 @@
 import { Engine } from '.';
 import { Ball } from '../../test/entities/Ball';
+import { Capsule } from '../../test/entities/Capsule';
+import { Wall } from '../../test/entities/Wall';
 
 export interface EngineSettings {
     canvas: CanvasSettings;
@@ -19,6 +21,11 @@ export type DebugEntity = (
     engine: Engine,
     entityIndex: number
 ) => void;
-export type CollisionResolution<T> = (a: T, b: T) => void;
-export type PenetrationResolution<T> = (a: T, b: T) => void;
-export type DetectCollision<T> = (a: T, b: T) => boolean;
+
+export interface MainLoopArgs {
+    mainBall: Ball;
+    balls?: Ball[];
+    walls?: Wall[];
+    capsules?: Capsule[];
+    debugEntity?: DebugEntity;
+}
