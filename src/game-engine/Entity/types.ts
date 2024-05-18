@@ -1,4 +1,4 @@
-import { Vector } from '../Vector';
+import { Vector } from '../physics/Vector';
 
 export enum KeyCodes {
     BACKSPACE = 'Backspace',

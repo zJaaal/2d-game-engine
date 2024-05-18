@@ -1,5 +1,5 @@
-import { Ball } from '../../test/Ball';
-import { Wall } from '../../test/Wall';
+import { Ball } from '../../test/entities/Ball';
+import { Wall } from '../../test/entities/Wall';
 import {
     collisionResolution,
     collisionResolutionWithWall,
@@ -8,7 +8,7 @@ import {
     penetrationResolution,
     penetrationResolutionWithWall
 } from '../../test/utils';
-import { Vector } from '../Vector';
+import { Vector } from '../physics/Vector';
 
 import { Controls, KeyCodes } from '../entity/types';
 import { CanvasSettings, DebugEntity, EngineSettings } from './types';

@@ -1,4 +1,4 @@
-import { Vector } from '../Vector';
+import { Vector } from '../physics/Vector';
 import { Controls, EntitySettings, KeyCodes } from './types';
 
 export class Entity {

@@ -1,34 +1,6 @@
-import { Entity } from '../game-engine/entity';
-import { Controls, EntitySettings, KeyCodes } from '../game-engine/entity/types';
-
-export enum BallControlMap {
-    UP = KeyCodes.KEY_W,
-    DOWN = KeyCodes.KEY_S,
-    LEFT = KeyCodes.KEY_A,
-    RIGHT = KeyCodes.KEY_D,
-    ALT_UP = KeyCodes.ARROW_UP,
-    ALT_DOWN = KeyCodes.ARROW_DOWN,
-    ALT_LEFT = KeyCodes.ARROW_LEFT,
-    ALT_RIGHT = KeyCodes.ARROW_RIGHT
-}
-
-export interface BallSettings extends EntitySettings {
-    radius: number;
-    startAngle?: number;
-    endAngle?: number;
-    color?: string;
-    strokeColor?: string;
-}
-
-export interface EntityBallSettings extends EntitySettings {
-    radius: number;
-    startAngle?: number;
-    endAngle?: number;
-    color?: string;
-    strokeColor?: string;
-}
-
-const FULL_DEGREES = Math.PI * 2;
+import { Entity } from '../../game-engine/entity';
+import { Controls } from '../../game-engine/entity/types';
+import { BallSettings, FULL_DEGREES, BallControlMap } from './types';
 
 export class Ball extends Entity {
     radius: number;
@@ -145,67 +117,4 @@ export class Ball extends Entity {
 
         this.position = this.position.add(this.speed);
     }
-}
-
-export class EntityBall extends Ball {
-    radius: number;
-    startAngle: number;
-    endAngle: number;
-    color: string;
-    strokeColor: string;
-
-    constructor({
-        position,
-        speed,
-        id,
-        acceleration,
-        mass,
-        accelerationFactor,
-        elasticity,
-        friction,
-        rotationFactor,
-        angle,
-        radius,
-        startAngle,
-        endAngle,
-        color,
-        strokeColor
-    }: EntityBallSettings) {
-        super({
-            position,
-            speed,
-            id,
-            radius,
-            startAngle,
-            endAngle,
-            rotationFactor,
-            angle,
-            color,
-            mass,
-            elasticity,
-            strokeColor,
-            acceleration,
-            accelerationFactor,
-            friction
-        });
-
-        this.radius = radius;
-        this.startAngle = startAngle ?? 0;
-        this.endAngle = endAngle ?? FULL_DEGREES;
-        this.color = color ?? 'black';
-        this.strokeColor = strokeColor ?? 'black';
-    }
-
-    override drawEntity(ctx: CanvasRenderingContext2D) {
-        ctx.beginPath();
-
-        ctx.arc(this.position.x, this.position.y, this.radius, this.startAngle, this.endAngle);
-
-        ctx.strokeStyle = this.strokeColor;
-        ctx.stroke();
-        ctx.fillStyle = this.color;
-        ctx.fill();
-    }
-
-    override handleControls(_controlMap: Controls<BallControlMap>) {}
 }

@@ -1,19 +1,8 @@
-import { Vector } from '../game-engine/Vector';
-import { Entity } from '../game-engine/entity';
-import { Controls, EntitySettings, KeyCodes } from '../game-engine/entity/types';
-import { createRotationMatrix } from './utils';
-
-export interface WallSettings extends Partial<EntitySettings> {
-    endPosition: Vector;
-    color: string;
-}
-
-export enum WallControls {
-    MOVE_END_X_ANTI_CLOCKWISE = KeyCodes.KEY_K,
-    MOVE_END_Y_CLOCKWISE = KeyCodes.KEY_L,
-    MOVE_END_X_ANTI_CLOCKWISE_ALT = KeyCodes.KEY_Q,
-    MOVE_END_X_CLOCKWISE_ALT = KeyCodes.KEY_E
-}
+import { Vector } from '../../game-engine/physics/Vector';
+import { Entity } from '../../game-engine/entity';
+import { Controls } from '../../game-engine/entity/types';
+import { createRotationMatrix } from '../utils';
+import { WallSettings, WallControls } from './types';
 
 export class Wall extends Entity {
     endPosition: Vector;

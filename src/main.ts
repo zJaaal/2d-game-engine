@@ -1,15 +1,16 @@
 import './style.css';
 import { Engine } from './game-engine/engine';
-import { Ball, BallSettings } from './test/Ball';
+import { Ball } from './test/entities/Ball';
 import {
-    genEntityBalls,
+    genRandomBalls,
     RNGPosition,
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
     genRandomWalls
 } from './test/utils';
 import { CanvasSettings, DebugEntity } from './game-engine/engine/types';
-import { Vector } from './game-engine/Vector';
+import { Vector } from './game-engine/physics/Vector';
+import { BallSettings } from './test/entities/types';
 
 const canvasSettings: CanvasSettings = {
     width: CANVAS_WIDTH,
@@ -37,7 +38,7 @@ const ballSettings: BallSettings = {
 
 const ball = new Ball(ballSettings);
 
-const entities = genEntityBalls(20, ballSettings);
+const entities = genRandomBalls(20, ballSettings);
 // const entities: Ball[] = [];
 
 const walls = genRandomWalls(5);

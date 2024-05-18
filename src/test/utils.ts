@@ -1,7 +1,9 @@
-import { Vector } from '../game-engine/Vector';
-import { Matrix } from '../game-engine/matrix';
-import { Ball, BallSettings, EntityBall } from './Ball';
-import { Wall } from './Wall';
+import { Vector } from '../game-engine/physics/Vector';
+import { Matrix } from '../game-engine/physics/matrix';
+import { Ball } from './entities/Ball';
+
+import { Wall } from './entities/Wall';
+import { BallSettings } from './entities/types';
 
 export const PADDING = 100;
 export const ASPECT_RATIO = 1.7; // 16:9
@@ -18,7 +20,7 @@ export const RNGPosition = () =>
 
 export const RNGColor = () =>
     `rgb(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255})`;
-export function genEntityBalls(n: number, ballSettings: BallSettings): EntityBall[] {
+export function genRandomBalls(n: number, ballSettings: BallSettings): Ball[] {
     const balls = [];
     for (let i = 0; i < n; i++) {
         let radius = Math.random() * 50 + 20;
@@ -28,7 +30,7 @@ export function genEntityBalls(n: number, ballSettings: BallSettings): EntityBal
         let elasticity = Math.random();
 
         balls.push(
-            new EntityBall({
+            new Ball({
                 ...ballSettings,
                 radius,
                 mass,
