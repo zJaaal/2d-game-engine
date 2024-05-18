@@ -1,7 +1,7 @@
 import { Entity } from '../../game-engine/entity';
 import { Controls } from '../../game-engine/entity/types';
 import { Vector } from '../../game-engine/physics/vector';
-import { BallSettings, FULL_DEGREES, BallControlMap } from './types';
+import { BallSettings, FULL_DEGREES, LinearMovementMap } from './types';
 
 export class Ball extends Entity {
     radius: number;
@@ -79,12 +79,14 @@ export class Ball extends Entity {
         }
     }
 
-    override handleControls(controlMap: Controls<BallControlMap>): void {
-        const UP = controlMap.get(BallControlMap.UP) || controlMap.get(BallControlMap.ALT_UP);
-        const DOWN = controlMap.get(BallControlMap.DOWN) || controlMap.get(BallControlMap.ALT_DOWN);
-        const LEFT = controlMap.get(BallControlMap.LEFT) || controlMap.get(BallControlMap.ALT_LEFT);
+    override handleControls(controlMap: Controls<LinearMovementMap>): void {
+        const UP = controlMap.get(LinearMovementMap.UP) || controlMap.get(LinearMovementMap.ALT_UP);
+        const DOWN =
+            controlMap.get(LinearMovementMap.DOWN) || controlMap.get(LinearMovementMap.ALT_DOWN);
+        const LEFT =
+            controlMap.get(LinearMovementMap.LEFT) || controlMap.get(LinearMovementMap.ALT_LEFT);
         const RIGHT =
-            controlMap.get(BallControlMap.RIGHT) || controlMap.get(BallControlMap.ALT_RIGHT);
+            controlMap.get(LinearMovementMap.RIGHT) || controlMap.get(LinearMovementMap.ALT_RIGHT);
 
         if (UP) {
             this.acceleration.y = -this.accelerationFactor;

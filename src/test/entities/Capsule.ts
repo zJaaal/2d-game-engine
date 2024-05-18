@@ -1,34 +1,59 @@
 import { Entity } from '../../game-engine/entity';
-import { Controls, KeyCodes } from '../../game-engine/entity/types';
+import { Controls } from '../../game-engine/entity/types';
 import { Vector } from '../../game-engine/physics/vector';
-import { CapsuleSettings } from './types';
+import { createRotationMatrix } from '../utils';
+import { CapsuleSettings, LinearMovementMap } from './types';
 
 export class Capsule extends Entity {
-    endPosition: Vector;
+    end: Vector;
+    start: Vector;
     radius: number;
-    refAngle: number = 0;
     refDirection: Vector;
     strokeColor: string;
     color: string;
+    length: number;
+    direction: Vector;
+    refAngle: number;
+    angleSpeed: number = 0;
 
-    constructor({ position, endPosition, radius, id, strokeColor, color }: CapsuleSettings) {
+    constructor({
+        position,
+        end,
+        start,
+        radius,
+        id,
+        strokeColor,
+        color,
+        elasticity,
+        acceleration,
+        accelerationFactor,
+        friction,
+        mass,
+        rotationFactor,
+        angle
+    }: CapsuleSettings) {
         super({
-            position: position ?? new Vector(0, 0),
-            elasticity: 1,
+            position,
+            elasticity,
+            acceleration,
+            accelerationFactor,
+            friction,
+            mass,
+            rotationFactor,
+            angle,
             speed: new Vector(0, 0),
-            acceleration: new Vector(0, 0),
-            accelerationFactor: 1,
-            friction: 0,
-            mass: 0,
-            id: 'Capsule-' + id,
-            rotationFactor: 0,
-            angle: 0
+            id: id
         });
 
-        this.endPosition = endPosition;
+        this.end = end;
+        this.start = start;
         this.radius = radius;
+        this.position = this.start.add(this.end).multiply(0.5);
+        this.length = this.end.subtract(this.start).magnitude();
 
-        this.refDirection = this.endPosition.subtract(this.position).unit();
+        this.direction = this.end.subtract(this.start).unit();
+
+        this.refDirection = this.end.subtract(this.start).unit();
 
         this.refAngle = Math.acos(Vector.dot(this.refDirection, new Vector(1, 0)));
 
@@ -45,26 +70,71 @@ export class Capsule extends Entity {
         ctx.strokeStyle = this.strokeColor;
         ctx.fillStyle = this.color;
         ctx.arc(
-            this.position.x,
-            this.position.y,
+            this.start.x,
+            this.start.y,
             this.radius,
-            this.refAngle + Math.PI / 2,
-            this.refAngle + (3 * Math.PI) / 2
+            this.refAngle + this.angle + Math.PI / 2,
+            this.refAngle + this.angle + (3 * Math.PI) / 2
         );
 
         ctx.arc(
-            this.endPosition.x,
-            this.endPosition.y,
+            this.end.x,
+            this.end.y,
             this.radius,
-            this.refAngle - Math.PI / 2,
-            this.refAngle + Math.PI / 2
+            this.refAngle + this.angle - Math.PI / 2,
+            this.refAngle + this.angle + Math.PI / 2
         );
         ctx.closePath();
         ctx.stroke();
         ctx.fill();
     }
 
-    handleControls(_controlMap: Controls<KeyCodes>): void {}
+    handleControls(controlMap: Controls<LinearMovementMap>): void {
+        const UP = controlMap.get(LinearMovementMap.UP) || controlMap.get(LinearMovementMap.ALT_UP);
+        const DOWN =
+            controlMap.get(LinearMovementMap.DOWN) || controlMap.get(LinearMovementMap.ALT_DOWN);
+        const LEFT =
+            controlMap.get(LinearMovementMap.LEFT) || controlMap.get(LinearMovementMap.ALT_LEFT);
+        const RIGHT =
+            controlMap.get(LinearMovementMap.RIGHT) || controlMap.get(LinearMovementMap.ALT_RIGHT);
 
-    reposition(): void {}
+        if (UP) {
+            this.acceleration = this.direction.multiply(-this.accelerationFactor);
+        }
+
+        if (DOWN) {
+            this.acceleration = this.direction.multiply(this.accelerationFactor);
+        }
+
+        if (!UP && !DOWN) {
+            this.acceleration = new Vector(0, 0);
+        }
+
+        if (LEFT) {
+            this.angleSpeed = -this.rotationFactor;
+        }
+
+        if (RIGHT) {
+            this.angleSpeed = this.rotationFactor;
+        }
+    }
+
+    reposition(): void {
+        this.acceleration = this.acceleration.unit().multiply(this.accelerationFactor);
+
+        this.speed = this.speed.add(this.acceleration).multiply(1 - this.friction);
+
+        this.position = this.position.add(this.speed);
+
+        this.angle += this.angleSpeed;
+        this.angleSpeed *= 1 - this.friction;
+
+        let rotationMatrix = createRotationMatrix(this.angle);
+
+        this.direction = rotationMatrix.multiplyVector(this.refDirection);
+
+        this.start = this.position.subtract(this.direction.multiply(this.length / 2));
+
+        this.end = this.position.add(this.direction.multiply(this.length / 2));
+    }
 }

@@ -1,7 +1,7 @@
 import { KeyCodes, EntitySettings } from '../../game-engine/entity/types';
 import { Vector } from '../../game-engine/physics/vector';
 
-export enum BallControlMap {
+export enum LinearMovementMap {
     UP = KeyCodes.KEY_W,
     DOWN = KeyCodes.KEY_S,
     LEFT = KeyCodes.KEY_A,
@@ -21,22 +21,17 @@ export interface BallSettings extends EntitySettings {
 }
 
 export interface WallSettings extends Partial<EntitySettings> {
-    endPosition: Vector;
+    start: Vector;
+    end: Vector;
     color: string;
 }
 
 export interface CapsuleSettings extends EntitySettings {
-    endPosition: Vector;
+    start: Vector;
+    end: Vector;
     radius: number;
     strokeColor: string;
     color: string;
-}
-
-export enum WallControls {
-    MOVE_END_X_ANTI_CLOCKWISE = KeyCodes.KEY_K,
-    MOVE_END_Y_CLOCKWISE = KeyCodes.KEY_L,
-    MOVE_END_X_ANTI_CLOCKWISE_ALT = KeyCodes.KEY_Q,
-    MOVE_END_X_CLOCKWISE_ALT = KeyCodes.KEY_E
 }
 
 export const FULL_DEGREES = Math.PI * 2;

@@ -14,6 +14,11 @@ import { Vector } from './game-engine/physics/vector';
 
 import { BallSettings, CapsuleSettings } from './test/entities/types';
 import { Wall } from './test/entities/Wall';
+import { Capsule } from './test/entities/Capsule';
+
+let balls: Ball[] = [];
+let capsules: Capsule[] = [];
+let walls: Wall[] = [];
 
 const canvasSettings: CanvasSettings = {
     width: CANVAS_WIDTH,
@@ -25,11 +30,11 @@ const canvasSettings: CanvasSettings = {
 const sharedSettings = {
     position: RNGPosition(),
     speed: new Vector(0, 0),
-    accelerationFactor: 1,
+    accelerationFactor: Math.random() * 1,
     elasticity: 1,
     mass: 40 * 0.06,
     acceleration: new Vector(0, 0),
-    friction: 0.1,
+    friction: Math.random() * 0.3,
     angle: 0,
     rotationFactor: 0.1
 };
@@ -46,21 +51,20 @@ const ballInitialSettings: BallSettings = {
 const capsuleInitialSettings: CapsuleSettings = {
     ...sharedSettings,
     id: 'MainCapsule',
-    endPosition: new Vector(100, 100),
+    end: new Vector(0, 0),
+    start: new Vector(1, 1),
     radius: 40,
     color: 'transparent',
     strokeColor: 'black'
 };
 
-const ball = new Ball(ballInitialSettings);
+const mainBall = new Ball(ballInitialSettings);
 
-// const balls = genRandomBalls(20, ballInitialSettings);
-const balls: Ball[] = [];
+// balls = genRandomBalls(20, ballInitialSettings);
 
-const capsules = genRandomCapsules(5, capsuleInitialSettings);
+capsules = genRandomCapsules(1, capsuleInitialSettings);
 
-// const walls = genRandomWalls(5);
-const walls: Wall[] = [];
+// walls = genRandomWalls(5);
 
 const engine = new Engine({
     canvas: canvasSettings,
@@ -77,4 +81,4 @@ const debugEntity: DebugEntity = (ctx, entity, engine, i) => {
     );
 };
 
-engine.initMainLoop(ball, balls, walls, capsules, debugEntity);
+engine.initMainLoop({ mainBall, balls, walls, capsules, debugEntity });

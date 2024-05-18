@@ -51,8 +51,9 @@ export function genRandomWalls(n: number) {
     for (let i = 0; i < n; i++) {
         walls.push(
             new Wall({
-                position: RNGPosition(),
-                endPosition: RNGPosition(),
+                start: RNGPosition(),
+                position: new Vector(0, 0),
+                end: RNGPosition(),
                 id: `wall-${i}`,
                 color: RNGColor(),
                 elasticity: 0,
@@ -84,6 +85,7 @@ export function genRandomCapsules(n: number, capsuleSettings: CapsuleSettings) {
         let mass = radius * 0.06;
 
         let elasticity = Math.random();
+        console.log(capsuleSettings.id);
 
         capsules.push(
             new Capsule({
@@ -91,9 +93,10 @@ export function genRandomCapsules(n: number, capsuleSettings: CapsuleSettings) {
                 radius,
                 mass,
                 elasticity,
-                position: RNGPosition(),
-                endPosition: RNGPosition(),
-                id: `capsule-${i}`,
+                position: new Vector(0, 0),
+                start: RNGPosition(),
+                end: RNGPosition(),
+                id: i ? `capsule-${i}` : capsuleSettings.id,
                 color: RNGColor(),
                 strokeColor: RNGColor()
             })

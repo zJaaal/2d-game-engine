@@ -1,29 +1,30 @@
 import { Vector } from '../../game-engine/physics/vector';
 import { Entity } from '../../game-engine/entity';
-import { Controls } from '../../game-engine/entity/types';
+
 import { createRotationMatrix } from '../utils';
-import { WallSettings, WallControls } from './types';
+import { WallSettings } from './types';
 import { Ball } from './Ball';
 
 export class Wall extends Entity {
-    endPosition: Vector;
+    start: Vector;
+    end: Vector;
     color: string;
     center: Vector;
     length: number;
-    refEndPosition: Vector;
-    refStartPosition: Vector;
+    refEnd: Vector;
+    refStart: Vector;
     refUnit: Vector;
-    angleSpeed: number = 0;
 
     constructor({
         position,
-        endPosition,
+        end,
         id,
         color,
         elasticity,
         angle,
         rotationFactor,
-        friction
+        friction,
+        start
     }: WallSettings) {
         super({
             position: position ?? new Vector(0, 0),
@@ -38,75 +39,55 @@ export class Wall extends Entity {
             angle: angle ?? 0
         });
 
-        this.endPosition = endPosition;
+        this.end = end;
+        this.start = start;
         this.color = color;
 
-        this.center = this.position.add(this.endPosition).multiply(0.5);
-        this.length = this.endPosition.subtract(this.position).magnitude();
-        this.refStartPosition = new Vector(this.position.x, this.position.y);
-        this.refEndPosition = new Vector(this.endPosition.x, this.endPosition.y);
-        this.refUnit = this.endPosition.subtract(this.position).unit();
+        this.refStart = new Vector(this.start.x, this.start.y);
+        this.refEnd = new Vector(this.end.x, this.end.y);
+
+        this.center = this.start.add(this.end).multiply(0.5);
+        this.length = this.end.subtract(this.start).magnitude();
+        this.refUnit = this.end.subtract(this.start).unit();
     }
 
     drawEntity(ctx: CanvasRenderingContext2D): void {
         let rotationMatrix = createRotationMatrix(this.angle);
         let newDirection = rotationMatrix.multiplyVector(this.refUnit);
 
-        this.position = this.center.subtract(newDirection.multiply(this.length / 2));
-        this.endPosition = this.center.add(newDirection.multiply(this.length / 2));
+        this.start = this.center.subtract(newDirection.multiply(this.length / 2));
+        this.end = this.center.add(newDirection.multiply(this.length / 2));
 
         ctx.beginPath();
         ctx.strokeStyle = this.color;
-        ctx.moveTo(this.position.x, this.position.y);
-        ctx.lineTo(this.endPosition.x, this.endPosition.y);
+        ctx.moveTo(this.start.x, this.start.y);
+        ctx.lineTo(this.end.x, this.end.y);
         ctx.stroke();
         ctx.closePath();
     }
 
     wallUnit() {
-        return this.endPosition.subtract(this.position).unit();
-    }
-
-    handleControls(controlMap: Controls<WallControls>): void {
-        const MOVE_END_X_ANTI_CLOCKWISE =
-            controlMap.get(WallControls.MOVE_END_X_ANTI_CLOCKWISE) ||
-            controlMap.get(WallControls.MOVE_END_X_ANTI_CLOCKWISE_ALT);
-
-        const MOVE_END_X_CLOCKWISE =
-            controlMap.get(WallControls.MOVE_END_Y_CLOCKWISE) ||
-            controlMap.get(WallControls.MOVE_END_X_CLOCKWISE_ALT);
-
-        if (MOVE_END_X_ANTI_CLOCKWISE) {
-            this.angleSpeed = -this.rotationFactor;
-        }
-        if (MOVE_END_X_CLOCKWISE) {
-            this.angleSpeed = this.rotationFactor;
-        }
-    }
-
-    reposition(): void {
-        this.angle += this.angleSpeed;
-        this.angleSpeed *= 1 - this.friction;
+        return this.end.subtract(this.start).unit();
     }
 }
 
 export function closestPointFromBallToWall(ball: Ball, wall: Wall) {
-    let ballToWallStart = wall.position.subtract(ball.position);
+    let ballToWallStart = wall.start.subtract(ball.position);
 
     if (Vector.dot(wall.wallUnit(), ballToWallStart) > 0) {
-        return wall.position;
+        return wall.start;
     }
 
-    let wallEndToBall = ball.position.subtract(wall.endPosition);
+    let wallEndToBall = ball.position.subtract(wall.end);
 
     if (Vector.dot(wall.wallUnit(), wallEndToBall) > 0) {
-        return wall.endPosition;
+        return wall.end;
     }
 
     let closestDistanceToWall = Vector.dot(wall.wallUnit(), ballToWallStart);
     let closestVector = wall.wallUnit().multiply(closestDistanceToWall);
 
-    return wall.position.subtract(closestVector);
+    return wall.start.subtract(closestVector);
 }
 
 export function detectCollisionWithWall(ball: Ball, wall: Wall) {
