@@ -85,7 +85,6 @@ export class Wall extends Entity {
 
     reposition(): void {
         this.angle += this.angleSpeed;
-
-        this.angleSpeed *= this.friction;
+        this.angleSpeed *= 1 - this.friction;
     }
 }

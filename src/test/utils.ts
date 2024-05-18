@@ -56,8 +56,8 @@ export function genRandomWalls(n: number) {
                 color: RNGColor(),
                 elasticity: 0,
                 angle: 0,
-                rotationFactor: Math.random() * 0.5,
-                friction: Math.random()
+                rotationFactor: Math.random() * 0.3,
+                friction: Math.random() * 0.3
             })
         );
     }
