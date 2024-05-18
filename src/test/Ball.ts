@@ -47,6 +47,8 @@ export class Ball extends Entity {
         DEBUG,
         mass,
         elasticity,
+        rotationFactor,
+        angle,
         radius,
         startAngle,
         endAngle,
@@ -62,7 +64,9 @@ export class Ball extends Entity {
             friction,
             DEBUG,
             mass,
-            elasticity
+            elasticity,
+            angle,
+            rotationFactor
         });
 
         this.radius = radius;
@@ -159,6 +163,8 @@ export class EntityBall extends Ball {
         accelerationFactor,
         elasticity,
         friction,
+        rotationFactor,
+        angle,
         radius,
         startAngle,
         endAngle,
@@ -172,6 +178,8 @@ export class EntityBall extends Ball {
             radius,
             startAngle,
             endAngle,
+            rotationFactor,
+            angle,
             color,
             mass,
             elasticity,

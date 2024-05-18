@@ -83,6 +83,8 @@ export class Engine {
 
             walls.forEach((wall) => {
                 wall.drawEntity(this.ctx as CanvasRenderingContext2D);
+                wall.handleControls(this.pressedKeys);
+                wall.reposition();
             });
 
             requestAnimationFrame(loop);

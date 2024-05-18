@@ -118,6 +118,8 @@ export interface EntitySettings {
     mass: number;
     acceleration: Vector;
     accelerationFactor: number;
+    angle: number;
+    rotationFactor: number;
     friction: number;
     id: string;
     DEBUG?: boolean;

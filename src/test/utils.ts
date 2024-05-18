@@ -1,4 +1,5 @@
 import { Vector } from '../game-engine/Vector';
+import { Matrix } from '../game-engine/matrix';
 import { Ball, BallSettings, EntityBall } from './Ball';
 import { Wall } from './Wall';
 
@@ -19,12 +20,12 @@ export const RNGColor = () =>
     `rgb(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255})`;
 export function genEntityBalls(n: number, ballSettings: BallSettings): EntityBall[] {
     const balls = [];
-    for (let i = 0; i <= n; i++) {
+    for (let i = 0; i < n; i++) {
         let radius = Math.random() * 50 + 20;
 
         let mass = radius * 0.06;
 
-        let elasticity = Math.random() * 3;
+        let elasticity = Math.random();
 
         balls.push(
             new EntityBall({
@@ -44,14 +45,17 @@ export function genEntityBalls(n: number, ballSettings: BallSettings): EntityBal
 
 export function genRandomWalls(n: number) {
     const walls = [];
-    for (let i = 0; i <= n; i++) {
+    for (let i = 0; i < n; i++) {
         walls.push(
             new Wall({
                 position: RNGPosition(),
                 endPosition: RNGPosition(),
                 id: `wall-${i}`,
                 color: RNGColor(),
-                elasticity: 0
+                elasticity: 0,
+                angle: 0,
+                rotationFactor: Math.random() * 0.5,
+                friction: Math.random()
             })
         );
     }
@@ -142,4 +146,15 @@ export function collisionResolution(b1: Ball, b2: Ball) {
 
     b1.speed = b1.speed.add(impulseVector.multiply(b1.inverseMass));
     b2.speed = b2.speed.add(impulseVector.multiply(-b2.inverseMass));
+}
+
+export function createRotationMatrix(angle: number) {
+    let matrix = new Matrix(2, 2);
+
+    matrix.data[0][0] = Math.cos(angle);
+    matrix.data[0][1] = -Math.sin(angle);
+    matrix.data[1][0] = Math.sin(angle);
+    matrix.data[1][1] = Math.cos(angle);
+
+    return matrix;
 }

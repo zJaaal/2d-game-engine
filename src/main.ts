@@ -30,7 +30,9 @@ const ballSettings: BallSettings = {
     color: 'transparent',
     strokeColor: 'black',
     DEBUG: true,
-    friction: 0.1
+    friction: 0.1,
+    angle: 0,
+    rotationFactor: 0.1
 };
 
 const ball = new Ball(ballSettings);
@@ -38,7 +40,7 @@ const ball = new Ball(ballSettings);
 const entities = genEntityBalls(20, ballSettings);
 // const entities: Ball[] = [];
 
-const walls = genRandomWalls(4);
+const walls = genRandomWalls(5);
 
 const engine = new Engine({
     canvas: canvasSettings,

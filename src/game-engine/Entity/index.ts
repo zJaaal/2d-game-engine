@@ -11,6 +11,8 @@ export class Entity {
     elasticity: number;
     mass: number;
     inverseMass: number;
+    angle: number;
+    rotationFactor: number;
     protected DEBUG: boolean;
 
     constructor({
@@ -22,7 +24,9 @@ export class Entity {
         acceleration,
         friction,
         elasticity,
-        mass
+        mass,
+        angle,
+        rotationFactor
     }: EntitySettings) {
         this.position = position;
         this.speed = speed;
@@ -33,6 +37,8 @@ export class Entity {
         this.friction = friction;
         this.elasticity = elasticity;
         this.mass = mass;
+        this.angle = angle;
+        this.rotationFactor = rotationFactor;
 
         this.inverseMass = this.mass ? 1 / this.mass : 0;
     }
