@@ -31,7 +31,8 @@ export class Capsule extends Entity {
         friction,
         mass,
         rotationFactor,
-        angle
+        angle,
+        DEBUG
     }: CapsuleSettings) {
         super({
             position,
@@ -42,6 +43,7 @@ export class Capsule extends Entity {
             mass,
             rotationFactor,
             angle,
+            DEBUG,
             speed: new Vector(0, 0),
             id: id
         });
@@ -86,6 +88,12 @@ export class Capsule extends Entity {
             this.refAngle + this.angle + Math.PI / 2
         );
         ctx.closePath();
+
+        if (this.DEBUG) {
+            ctx.moveTo(this.start.x, this.start.y);
+            ctx.lineTo(this.end.x, this.end.y);
+        }
+
         ctx.stroke();
         ctx.fill();
     }

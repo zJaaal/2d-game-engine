@@ -1,18 +1,18 @@
-import {
-    collisionResolution,
-    detectCollision,
-    penetrationResolution
-} from '../../test/entities/Ball';
-import {
-    collisionResolutionWithWall,
-    detectCollisionWithWall,
-    penetrationResolutionWithWall
-} from '../../test/entities/Wall';
-
 import { Vector } from '../physics/vector';
 
 import { Controls, KeyCodes } from '../entity/types';
 import { CanvasSettings, EngineSettings, MainLoopArgs } from './types';
+import {
+    detectCollisionWithWall,
+    penetrationResolutionWithWall,
+    collisionResolutionWithWall,
+    detectCollision,
+    penetrationResolution,
+    collisionResolution,
+    detectCollisionBetweenCapsules,
+    penetrationResolutionBetweenCapsules,
+    collisionResolutionBetweenCapsules
+} from '../physics/utils';
 
 export class Engine {
     canvasSettings: CanvasSettings;
@@ -68,7 +68,7 @@ export class Engine {
                 });
 
                 // This is inefficient, but it's fine for now
-                for (let j = i; j < fullEntities.length; j++) {
+                for (let j = i + 1; j < fullEntities.length; j++) {
                     if (detectCollision(entity, fullEntities[j])) {
                         penetrationResolution(entity, fullEntities[j]);
                         collisionResolution(entity, fullEntities[j]);
@@ -86,13 +86,21 @@ export class Engine {
                 wall.drawEntity(this.ctx as CanvasRenderingContext2D);
             });
 
-            capsules.forEach((capsule) => {
+            capsules.forEach((capsule, i) => {
                 capsule.drawEntity(this.ctx as CanvasRenderingContext2D);
 
                 if (capsule.id === 'MainCapsule') {
                     capsule.handleControls(this.pressedKeys);
-                    capsule.reposition();
                 }
+
+                for (let j = i + 1; j < capsules.length; j++) {
+                    if (detectCollisionBetweenCapsules(capsule, capsules[j])) {
+                        penetrationResolutionBetweenCapsules(capsule, capsules[j]);
+                        collisionResolutionBetweenCapsules(capsule, capsules[j]);
+                    }
+                }
+
+                capsule.reposition();
             });
 
             requestAnimationFrame(loop);

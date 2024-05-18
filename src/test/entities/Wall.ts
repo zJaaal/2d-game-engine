@@ -2,12 +2,12 @@ import { Vector } from '../../game-engine/physics/vector';
 import { Entity } from '../../game-engine/entity';
 
 import { WallSettings } from './types';
-import { Ball } from './Ball';
 
 export class Wall extends Entity {
     start: Vector;
     end: Vector;
     color: string;
+    direction: Vector;
 
     constructor({ position, end, id, color, elasticity, start }: WallSettings) {
         super({
@@ -26,6 +26,7 @@ export class Wall extends Entity {
         this.end = end;
         this.start = start;
         this.color = color;
+        this.direction = this.end.subtract(this.start).unit();
     }
 
     drawEntity(ctx: CanvasRenderingContext2D): void {
@@ -36,55 +37,4 @@ export class Wall extends Entity {
         ctx.stroke();
         ctx.closePath();
     }
-
-    wallUnit() {
-        return this.end.subtract(this.start).unit();
-    }
-}
-
-export function closestPointFromBallToWall(ball: Ball, wall: Wall) {
-    let ballToWallStart = wall.start.subtract(ball.position);
-
-    if (Vector.dot(wall.wallUnit(), ballToWallStart) > 0) {
-        return wall.start;
-    }
-
-    let wallEndToBall = ball.position.subtract(wall.end);
-
-    if (Vector.dot(wall.wallUnit(), wallEndToBall) > 0) {
-        return wall.end;
-    }
-
-    let closestDistanceToWall = Vector.dot(wall.wallUnit(), ballToWallStart);
-    let closestVector = wall.wallUnit().multiply(closestDistanceToWall);
-
-    return wall.start.subtract(closestVector);
-}
-
-export function detectCollisionWithWall(ball: Ball, wall: Wall) {
-    let closestPoint = closestPointFromBallToWall(ball, wall).subtract(ball.position);
-
-    return closestPoint.magnitude() <= ball.radius;
-}
-
-export function penetrationResolutionWithWall(ball: Ball, wall: Wall) {
-    let penetrationVector = ball.position.subtract(closestPointFromBallToWall(ball, wall));
-
-    let collisionDepth = ball.radius - penetrationVector.magnitude();
-
-    let penetrationResolution = penetrationVector.unit().multiply(collisionDepth);
-
-    ball.position = ball.position.add(penetrationResolution);
-}
-
-export function collisionResolutionWithWall(ball: Ball, wall: Wall) {
-    let normal = ball.position.subtract(closestPointFromBallToWall(ball, wall)).unit();
-
-    let separatingVelocity = Vector.dot(ball.speed, normal);
-
-    let newSeparatingVelocity = -separatingVelocity * ball.elasticity;
-
-    let separatingVelocityDiff = separatingVelocity - newSeparatingVelocity;
-
-    ball.speed = ball.speed.add(normal.multiply(-separatingVelocityDiff));
 }
