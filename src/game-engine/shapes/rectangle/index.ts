@@ -1,14 +1,20 @@
-import { Matrix, createRotationMatrix } from '../../physics/matrix';
 import { Vector } from '../../physics/vector';
-import { Shape } from '../../shape';
+import { Shape } from '../../primitives/shape';
 import { RectangleSettings } from './types';
 
 export class Rectangle extends Shape {
-    direction: Vector;
-    refDirection: Vector;
     length: number;
     width: number;
-    rotationMatrix: Matrix;
+    // Quadrants of a Cartesian plane from left to rigth counter clockwise
+    quadrants: Array<number[]> = [
+        [-1, 1],
+
+        [-1, -1],
+
+        [1, -1],
+
+        [1, 1]
+    ];
 
     constructor({ firstPoint, secondPoint, color, strokeColor, width }: RectangleSettings) {
         super({
@@ -28,16 +34,16 @@ export class Rectangle extends Shape {
         this.position = firstPoint
             .add(this.direction.multiply(this.length / 2))
             .add(this.direction.normal().multiply(this.width / 2));
-
-        this.rotationMatrix = new Matrix(2, 2);
     }
 
     draw(ctx: CanvasRenderingContext2D): void {
         ctx.beginPath();
         ctx.moveTo(this.vertexes[0].x, this.vertexes[0].y);
-        ctx.lineTo(this.vertexes[1].x, this.vertexes[1].y);
-        ctx.lineTo(this.vertexes[2].x, this.vertexes[2].y);
-        ctx.lineTo(this.vertexes[3].x, this.vertexes[3].y);
+
+        for (let i = 1; i < this.vertexes.length; i++) {
+            ctx.lineTo(this.vertexes[i].x, this.vertexes[i].y);
+        }
+
         ctx.lineTo(this.vertexes[0].x, this.vertexes[0].y);
         ctx.strokeStyle = this.strokeColor;
         ctx.fillStyle = this.strokeColor;
@@ -53,25 +59,17 @@ export class Rectangle extends Shape {
     move(linearSpeed: Vector, angle: number): void {
         this.position = this.position.add(linearSpeed);
 
-        this.rotationMatrix = createRotationMatrix(angle);
+        this.rotationMatrix.createRotationMatrix2by2(angle);
 
         this.direction = this.rotationMatrix.multiplyVector(this.refDirection);
 
-        this.vertexes[0] = this.position
-            .add(this.direction.multiply(-this.length / 2))
-            .add(this.direction.normal().multiply(this.width / 2));
+        this.vertexes = this.vertexes.map((_, i) => {
+            const [x, y] = this.quadrants[i];
 
-        this.vertexes[1] = this.position
-            .add(this.direction.multiply(-this.length / 2))
-            .add(this.direction.normal().multiply(-this.width / 2));
-
-        this.vertexes[2] = this.position
-            .add(this.direction.multiply(this.length / 2))
-            .add(this.direction.normal().multiply(-this.width / 2));
-
-        this.vertexes[3] = this.position
-            .add(this.direction.multiply(this.length / 2))
-            .add(this.direction.normal().multiply(this.width / 2));
+            return this.position
+                .add(this.direction.multiply((this.length / 2) * x))
+                .add(this.direction.normal().multiply((this.width / 2) * y));
+        });
     }
 
     getAxes(): Vector[] {

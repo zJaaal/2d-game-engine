@@ -1,9 +1,8 @@
 import { Vector } from '../../physics/vector';
-import { Shape } from '../../shape';
+import { Shape } from '../../primitives/shape';
 import { LineSettings } from './types';
 
 export class Line extends Shape {
-    direction: Vector;
     length: number;
     vertexes: Vector[];
 

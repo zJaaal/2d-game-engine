@@ -23,15 +23,13 @@ export class Matrix {
 
         return new Vector(x, y);
     }
-}
 
-export function createRotationMatrix(angle: number) {
-    let matrix = new Matrix(2, 2);
+    createRotationMatrix2by2(angle: number) {
+        this.data[0][0] = Math.cos(angle);
+        this.data[0][1] = -Math.sin(angle);
+        this.data[1][0] = Math.sin(angle);
+        this.data[1][1] = Math.cos(angle);
 
-    matrix.data[0][0] = Math.cos(angle);
-    matrix.data[0][1] = -Math.sin(angle);
-    matrix.data[1][0] = Math.sin(angle);
-    matrix.data[1][1] = Math.cos(angle);
-
-    return matrix;
+        return this;
+    }
 }

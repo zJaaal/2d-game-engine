@@ -1,4 +1,4 @@
-import { Entity } from '../../entity';
+import { Entity } from '../../primitives/entity';
 
 import { Vector } from '../vector';
 

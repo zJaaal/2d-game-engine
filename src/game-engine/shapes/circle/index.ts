@@ -1,7 +1,7 @@
 import { Collision } from '../../physics/collision';
 
 import { Vector } from '../../physics/vector';
-import { Shape } from '../../shape';
+import { Shape } from '../../primitives/shape';
 import { CircleSettings } from './types';
 
 export class Circle extends Shape {

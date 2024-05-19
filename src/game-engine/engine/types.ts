@@ -1,7 +1,7 @@
 import { Engine } from '.';
-import { Ball } from '../../test/entities/Ball';
+import { Ball } from '../../test/entities/ball';
 
-import { Entity } from '../entity';
+import { Entity } from '../primitives/entity';
 
 export interface EngineSettings {
     canvas: CanvasSettings;

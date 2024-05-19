@@ -1,4 +1,5 @@
-import { Vector } from '../physics/vector';
+import { Matrix } from '../../physics/matrix';
+import { Vector } from '../../physics/vector';
 import { ShapeSettings } from './types';
 
 export class Shape {
@@ -6,6 +7,9 @@ export class Shape {
     position: Vector = new Vector(0, 0);
     strokeColor: string;
     color: string;
+    direction: Vector = new Vector(0, 0);
+    refDirection: Vector = new Vector(0, 0);
+    rotationMatrix: Matrix = new Matrix(2, 2);
 
     constructor({ color, strokeColor }: ShapeSettings) {
         this.color = color ?? 'black';

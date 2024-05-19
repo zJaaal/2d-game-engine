@@ -1,4 +1,4 @@
-import { Vector } from '../physics/vector';
+import { Vector } from '../../physics/vector';
 import { Shape } from '../shape';
 
 export enum KeyCodes {

@@ -1,8 +1,10 @@
-import { Entity } from '../../game-engine/entity';
-import { Controls } from '../../game-engine/entity/types';
+import { Entity } from '../../../game-engine/primitives/entity';
+import { Controls } from '../../../game-engine/primitives/entity/types';
 
-import { Circle } from '../../game-engine/shapes/circle';
-import { BallSettings, FULL_DEGREES, LinearMovementMap } from './types';
+import { Circle } from '../../../game-engine/shapes/circle';
+import { BallSettings } from './types';
+import { FULL_DEGREES } from '../../../game-engine/const';
+import { LinearMovementMap } from '../../const';
 
 export class Ball extends Entity {
     radius: number;

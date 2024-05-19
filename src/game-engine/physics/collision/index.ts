@@ -1,5 +1,5 @@
-import { Entity } from '../../entity';
-import { Shape } from '../../shape';
+import { Entity } from '../../primitives/entity';
+import { Shape } from '../../primitives/shape';
 
 import { Vector } from '../vector';
 import { CollisionSettings, SeparationAxisTheorem } from './types';

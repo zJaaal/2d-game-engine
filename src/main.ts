@@ -1,6 +1,6 @@
 import './style.css';
 import { Engine } from './game-engine/engine';
-import { Ball } from './test/entities/Ball';
+import { Ball } from './test/entities/ball';
 import {
     genRandomBalls,
     RNGPosition,
@@ -14,9 +14,9 @@ import {
 import { CanvasSettings } from './game-engine/engine/types';
 import { Vector } from './game-engine/physics/vector';
 
-import { BallSettings, CapsuleSettings } from './test/entities/types';
-
-import { Entity } from './game-engine/entity';
+import { Entity } from './game-engine/primitives/entity';
+import { BallSettings } from './test/entities/ball/types';
+import { CapsuleSettings } from './test/entities/capsule/types';
 
 let entities: Entity[] = [];
 
@@ -81,7 +81,7 @@ entities.push(...genRandomBalls(4, ballInitialSettings));
 
 entities.push(...genRandomWalls(1));
 
-// entities.push(...genRandomBoxes(4, boxInitialSettings));
+entities.push(...genRandomBoxes(2, boxInitialSettings));
 
 const engine = new Engine({
     canvas: canvasSettings,
