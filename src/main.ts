@@ -77,11 +77,11 @@ entities.push(...genCanvasWalls(CANVAS_WIDTH, CANVAS_HEIGHT));
 
 entities.push(...genRandomBalls(4, ballInitialSettings));
 
-entities.push(...genRandomCapsules(3, capsuleInitialSettings));
+// entities.push(...genRandomCapsules(3, capsuleInitialSettings));
 
 entities.push(...genRandomWalls(1));
 
-entities.push(...genRandomBoxes(4, boxInitialSettings));
+// entities.push(...genRandomBoxes(4, boxInitialSettings));
 
 const engine = new Engine({
     canvas: canvasSettings,

@@ -7,10 +7,9 @@ import { Line } from '../../game-engine/shapes/line';
 export class Wall extends Entity {
     start: Vector;
     end: Vector;
-    color: string;
     direction: Vector;
 
-    constructor({ position, end, id, color, elasticity, start, vertexes }: WallSettings) {
+    constructor({ position, end, id, elasticity, start, vertexes, strokeColor }: WallSettings) {
         super({
             position: position ?? new Vector(0, 0),
             elasticity: elasticity ?? 1,
@@ -22,24 +21,15 @@ export class Wall extends Entity {
             id: 'Wall-' + id,
             rotationFactor: 0,
             angle: 0,
+            components: [],
             vertexes,
-            components: []
+            strokeColor
         });
 
-        this.components = [new Line({ start, end, color })];
+        this.components = [new Line({ start, end, strokeColor })];
 
         this.end = end;
         this.start = start;
-        this.color = color;
         this.direction = this.end.subtract(this.start).unit();
-    }
-
-    override draw(ctx: CanvasRenderingContext2D): void {
-        ctx.beginPath();
-        ctx.strokeStyle = this.color;
-        ctx.moveTo(this.start.x, this.start.y);
-        ctx.lineTo(this.end.x, this.end.y);
-        ctx.stroke();
-        ctx.closePath();
     }
 }

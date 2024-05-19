@@ -6,16 +6,12 @@ import { CircleSettings } from './types';
 
 export class Circle extends Shape {
     radius: number;
-    color: string;
-    strokeColor: string;
 
     constructor({ position, radius, color, strokeColor }: CircleSettings) {
-        super();
+        super({ color, strokeColor });
 
         this.position = position;
         this.radius = radius;
-        this.color = color ?? 'black';
-        this.strokeColor = strokeColor ?? 'black';
     }
 
     override draw(ctx: CanvasRenderingContext2D): void {

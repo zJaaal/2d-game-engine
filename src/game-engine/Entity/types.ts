@@ -127,4 +127,6 @@ export interface EntitySettings {
     vertexes?: Vector[];
     direction?: Vector;
     components?: Shape[];
+    color?: string;
+    strokeColor?: string;
 }

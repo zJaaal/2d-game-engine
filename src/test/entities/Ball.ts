@@ -8,8 +8,6 @@ export class Ball extends Entity {
     radius: number;
     startAngle: number;
     endAngle: number;
-    color: string;
-    strokeColor: string;
 
     constructor({
         components,
@@ -42,20 +40,16 @@ export class Ball extends Entity {
             elasticity,
             angle,
             rotationFactor,
-            components
+            components,
+            strokeColor,
+            color
         });
 
         this.radius = radius;
         this.startAngle = startAngle ?? 0;
         this.endAngle = endAngle ?? FULL_DEGREES;
-        this.color = color ?? 'black';
-        this.strokeColor = strokeColor ?? 'black';
 
         this.components = [new Circle({ position, radius, color, strokeColor })];
-    }
-
-    override draw(ctx: CanvasRenderingContext2D) {
-        this.components.forEach((component) => component.draw(ctx));
     }
 
     override handlePressedKeys(pressedKeysMap: Controls<LinearMovementMap>): void {

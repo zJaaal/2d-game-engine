@@ -1,8 +1,7 @@
 import { Vector } from '../../physics/vector';
+import { ShapeSettings } from '../../shape/types';
 
-export interface CircleSettings {
+export interface CircleSettings extends ShapeSettings {
     position: Vector;
     radius: number;
-    color?: string;
-    strokeColor?: string;
 }

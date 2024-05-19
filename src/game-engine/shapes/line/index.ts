@@ -3,16 +3,17 @@ import { Shape } from '../../shape';
 import { LineSettings } from './types';
 
 export class Line extends Shape {
-    color: string;
     direction: Vector;
     length: number;
     vertexes: Vector[];
 
-    constructor({ start, end, color }: LineSettings) {
-        super();
+    constructor({ start, end, strokeColor }: LineSettings) {
+        super({
+            strokeColor
+        });
+
         this.vertexes = [start, end];
 
-        this.color = color;
         this.direction = end.subtract(start).unit();
         this.length = end.subtract(start).magnitude();
         this.position = new Vector((start.x + end.x) / 2, (start.y + end.y) / 2);
@@ -24,7 +25,7 @@ export class Line extends Shape {
         ctx.beginPath();
         ctx.moveTo(start.x, start.y);
         ctx.lineTo(end.x, end.y);
-        ctx.strokeStyle = this.color;
+        ctx.strokeStyle = this.strokeColor;
         ctx.stroke();
     }
 

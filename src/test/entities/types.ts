@@ -16,28 +16,22 @@ export interface BallSettings extends EntitySettings {
     radius: number;
     startAngle?: number;
     endAngle?: number;
-    color?: string;
-    strokeColor?: string;
 }
 
 export interface WallSettings extends Partial<EntitySettings> {
     start: Vector;
     end: Vector;
-    color: string;
+    strokeColor: string;
 }
 
 export interface CapsuleSettings extends EntitySettings {
     start: Vector;
     end: Vector;
     radius: number;
-    strokeColor: string;
-    color: string;
 }
 
 export interface BoxSettings extends EntitySettings {
     width: number;
-    color: string;
-    strokeColor: string;
     firstPoint: Vector;
     secondPoint: Vector;
 }

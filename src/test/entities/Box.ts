@@ -6,8 +6,6 @@ import { BoxSettings, LinearMovementMap } from './types';
 
 export class Box extends Entity {
     width: number;
-    color: string;
-    strokeColor: string;
 
     constructor({
         position,
@@ -38,7 +36,9 @@ export class Box extends Entity {
             mass,
             elasticity,
             angle,
-            rotationFactor
+            rotationFactor,
+            color,
+            strokeColor
         });
 
         this.components = [
@@ -52,15 +52,10 @@ export class Box extends Entity {
         ];
 
         this.width = width;
-        this.color = color ?? 'black';
-        this.strokeColor = strokeColor ?? 'black';
 
         const rectangle = this.components[0] as Rectangle;
 
         this.inertia = (this.mass * rectangle.width ** 2 + rectangle.length ** 2) / 12;
-    }
-    override draw(ctx: CanvasRenderingContext2D): void {
-        this.components.forEach((component) => component.draw(ctx));
     }
 
     override reposition(): void {

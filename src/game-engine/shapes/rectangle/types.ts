@@ -1,9 +1,8 @@
 import { Vector } from '../../physics/vector';
+import { ShapeSettings } from '../../shape/types';
 
-export interface RectangleSettings {
+export interface RectangleSettings extends ShapeSettings {
     firstPoint: Vector;
     secondPoint: Vector;
-    color: string;
-    strokeColor: string;
     width: number;
 }

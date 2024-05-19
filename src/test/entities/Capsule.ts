@@ -7,8 +7,6 @@ import { Rectangle } from '../../game-engine/shapes/rectangle';
 import { CapsuleSettings, LinearMovementMap } from './types';
 
 export class Capsule extends Entity {
-    strokeColor: string;
-    color: string;
     length: number;
     start: Vector;
     end: Vector;
@@ -41,8 +39,10 @@ export class Capsule extends Entity {
             rotationFactor,
             angle,
             DEBUG,
-            speed: new Vector(0, 0),
-            id: id
+            id,
+            color,
+            strokeColor,
+            speed: new Vector(0, 0)
         });
 
         this.components = [
@@ -77,17 +77,10 @@ export class Capsule extends Entity {
 
         this.length = end.subtract(start).magnitude();
 
-        this.strokeColor = strokeColor;
-        this.color = color;
-
         const rectangle = this.components[0] as Rectangle;
 
         this.inertia =
             (this.mass * (rectangle.length + this.radius * 2) ** 2 + (this.radius * 2) ** 2) / 12;
-    }
-
-    override draw(ctx: CanvasRenderingContext2D): void {
-        this.components.forEach((component) => component.draw(ctx));
     }
 
     override handlePressedKeys(pressedKeysMap: Controls<LinearMovementMap>): void {

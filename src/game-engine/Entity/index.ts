@@ -60,5 +60,7 @@ export class Entity {
 
     reposition() {}
 
-    draw(_ctx: CanvasRenderingContext2D) {}
+    draw(_ctx: CanvasRenderingContext2D) {
+        this.components.forEach((component) => component.draw(_ctx));
+    }
 }

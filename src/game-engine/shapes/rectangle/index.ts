@@ -8,20 +8,19 @@ export class Rectangle extends Shape {
     refDirection: Vector;
     length: number;
     width: number;
-    color: string;
-    strokeColor: string;
     rotationMatrix: Matrix;
 
     constructor({ firstPoint, secondPoint, color, strokeColor, width }: RectangleSettings) {
-        super();
+        super({
+            color,
+            strokeColor
+        });
         this.vertexes = [firstPoint, secondPoint];
 
         this.direction = secondPoint.subtract(firstPoint).unit();
         this.refDirection = secondPoint.subtract(firstPoint).unit();
         this.length = secondPoint.subtract(firstPoint).magnitude();
         this.width = width;
-        this.color = color;
-        this.strokeColor = strokeColor;
 
         this.vertexes[2] = secondPoint.add(this.direction.normal().multiply(this.width));
         this.vertexes[3] = this.vertexes[2].add(this.direction.normal().multiply(-this.length));
@@ -41,7 +40,7 @@ export class Rectangle extends Shape {
         ctx.lineTo(this.vertexes[3].x, this.vertexes[3].y);
         ctx.lineTo(this.vertexes[0].x, this.vertexes[0].y);
         ctx.strokeStyle = this.strokeColor;
-        ctx.fillStyle = this.color;
+        ctx.fillStyle = this.strokeColor;
         ctx.stroke();
         ctx.fill();
         ctx.closePath();
