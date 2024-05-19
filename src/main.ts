@@ -32,7 +32,7 @@ const sharedSettings = {
     speed: new Vector(0, 0),
     angleSpeed: 0,
     accelerationFactor: Math.random() * 1 + 0.5,
-    elasticity: Math.random(),
+    elasticity: 2,
     mass: 40 * 0.06,
     acceleration: new Vector(0, 0),
     friction: 0,

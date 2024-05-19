@@ -1,3 +1,4 @@
+import { CARTESIAN_PLANE_QUADRANTS } from '../../const';
 import { Vector } from '../../physics/vector';
 import { Shape } from '../../primitives/shape';
 import { RectangleSettings } from './types';
@@ -5,16 +6,6 @@ import { RectangleSettings } from './types';
 export class Rectangle extends Shape {
     length: number;
     width: number;
-    // Quadrants of a Cartesian plane from left to rigth counter clockwise
-    quadrants: Array<number[]> = [
-        [-1, 1],
-
-        [-1, -1],
-
-        [1, -1],
-
-        [1, 1]
-    ];
 
     constructor({ firstPoint, secondPoint, color, strokeColor, width }: RectangleSettings) {
         super({
@@ -64,7 +55,7 @@ export class Rectangle extends Shape {
         this.direction = this.rotationMatrix.multiplyVector(this.refDirection);
 
         this.vertexes = this.vertexes.map((_, i) => {
-            const [x, y] = this.quadrants[i];
+            const [x, y] = CARTESIAN_PLANE_QUADRANTS[i];
 
             return this.position
                 .add(this.direction.multiply((this.length / 2) * x))

@@ -56,6 +56,7 @@ export function genRandomWalls(n: number) {
                 position: new Vector(0, 0),
                 end: RNGPosition(),
                 id: `wall-${i}`,
+                elasticity: 1,
                 strokeColor: RNGColor(),
                 angle: 0,
                 rotationFactor: 0,
