@@ -20,9 +20,12 @@ export class Collision {
     }
 
     penetrationResolution() {
-        let penentrationResolution = this.normal.multiply(
-            this.penetrationDepth / (this.entityA.inverseMass + this.entityB.inverseMass)
-        );
+        let penetrationFactor =
+            this.penetrationDepth / (this.entityA.inverseMass + this.entityB.inverseMass);
+
+        penetrationFactor = isFinite(penetrationFactor) ? penetrationFactor : 1;
+
+        let penentrationResolution = this.normal.multiply(penetrationFactor);
 
         this.entityA.components[0].position = this.entityA.components[0].position.add(
             penentrationResolution.multiply(this.entityA.inverseMass)
@@ -56,6 +59,10 @@ export class Collision {
             let impulseAugmentation = Vector.cross(collisionArm, this.normal);
             impulseAugmentation = impulseAugmentation ** 2 * entity.inverseInertia;
 
+            // console.log(entity, impulseAugmentation);
+            // console.log(entity.inverseInertia);
+            // console.log(rotationalVelocity);
+
             return {
                 closingVelocity,
                 impulseAugmentation,
@@ -78,6 +85,8 @@ export class Collision {
                 this.entityB.inverseMass +
                 entityA.impulseAugmentation +
                 entityB.impulseAugmentation);
+
+        impulse = isFinite(impulse) ? impulse : 1;
 
         let impulseVector = this.normal.multiply(impulse);
 

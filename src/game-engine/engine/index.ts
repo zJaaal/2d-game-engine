@@ -76,7 +76,7 @@ export class Engine {
                         }
                     }
 
-                    if (bestSat.penetrationDepth !== -Infinity) {
+                    if (isFinite(bestSat.penetrationDepth)) {
                         const newCollision = new Collision({
                             entityA: entity,
                             entityB: entities[nextEntity],
