@@ -1,5 +1,6 @@
 import { Engine } from '.';
 import { Ball } from '../../test/entities/Ball';
+import { Box } from '../../test/entities/Box';
 import { Capsule } from '../../test/entities/Capsule';
 import { Wall } from '../../test/entities/Wall';
 
@@ -25,6 +26,7 @@ export type DebugEntity = (
 export interface MainLoopArgs {
     mainBall: Ball;
     balls?: Ball[];
+    boxes?: Box[];
     walls?: Wall[];
     capsules?: Capsule[];
     debugEntity?: DebugEntity;

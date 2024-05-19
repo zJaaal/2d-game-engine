@@ -1,9 +1,10 @@
 import { Vector } from '../game-engine/physics/vector';
 import { Ball } from './entities/Ball';
+import { Box } from './entities/Box';
 import { Capsule } from './entities/Capsule';
 
 import { Wall } from './entities/Wall';
-import { BallSettings, CapsuleSettings } from './entities/types';
+import { BallSettings, BoxSettings, CapsuleSettings } from './entities/types';
 
 export const PADDING = 100;
 export const ASPECT_RATIO = 1.7; // 16:9
@@ -75,7 +76,7 @@ export function genRandomCapsules(n: number, capsuleSettings: CapsuleSettings) {
 
         let mass = radius * 0.06;
 
-        let elasticity = Math.random();
+        let elasticity = Math.random() * 2;
 
         capsules.push(
             new Capsule({
@@ -152,4 +153,38 @@ export function genCanvasWalls(canvasWidth: number, canvasHeight: number) {
         })
     );
     return walls;
+}
+
+export function genRandomBoxes(n: number, boxSettings: BoxSettings) {
+    const boxes = [];
+    for (let i = 0; i < n; i++) {
+        let width = Math.random() * 100 + 20;
+
+        let mass = width * 0.06;
+
+        let elasticity = Math.random();
+
+        let firstPoint = RNGPosition();
+        let secondPoint = RNGPosition();
+
+        console.log({
+            firstPoint,
+            secondPoint
+        });
+
+        boxes.push(
+            new Box({
+                ...boxSettings,
+                width,
+                mass,
+                elasticity,
+                firstPoint,
+                secondPoint,
+                id: i ? `box-${i}` : boxSettings.id,
+                color: RNGColor(),
+                strokeColor: RNGColor()
+            })
+        );
+    }
+    return boxes;
 }

@@ -2,74 +2,74 @@ import { Entity } from '../../game-engine/entity';
 import { Controls } from '../../game-engine/entity/types';
 import { createRotationMatrix } from '../../game-engine/physics/matrix';
 import { Vector } from '../../game-engine/physics/vector';
+import { BoxSettings, LinearMovementMap } from './types';
 
-import { CapsuleSettings, LinearMovementMap } from './types';
-
-export class Capsule extends Entity {
-    end: Vector;
-    start: Vector;
-    radius: number;
-    refDirection: Vector;
-    strokeColor: string;
+export class Box extends Entity {
+    width: number;
     color: string;
+    strokeColor: string;
+    firstPoint: Vector;
+    secondPoint: Vector;
+    edge: Vector;
     length: number;
     direction: Vector;
-    refAngle: number;
+    refDirection: Vector;
     angleSpeed: number = 0;
     inertia: number;
     inverseInertia: number;
 
     constructor({
         position,
-        end,
-        start,
-        radius,
+        speed,
         id,
-        strokeColor,
-        color,
-        elasticity,
-        acceleration,
         accelerationFactor,
+        acceleration,
         friction,
+        DEBUG,
         mass,
-        rotationFactor,
+        elasticity,
         angle,
-        DEBUG
-    }: CapsuleSettings) {
+        rotationFactor,
+        width,
+        color,
+        strokeColor,
+        firstPoint,
+        secondPoint
+    }: BoxSettings) {
         super({
             position,
-            elasticity,
-            acceleration,
+            speed,
+            id,
             accelerationFactor,
+            acceleration,
             friction,
-            mass,
-            rotationFactor,
-            angle,
             DEBUG,
-            speed: new Vector(0, 0),
-            id: id
+            mass,
+            elasticity,
+            angle,
+            rotationFactor
         });
 
-        this.end = end;
-        this.start = start;
-        this.radius = radius;
-        this.position = this.start.add(this.end).multiply(0.5);
-        this.length = this.end.subtract(this.start).magnitude();
+        this.firstPoint = firstPoint;
+        this.secondPoint = secondPoint;
 
-        this.direction = this.end.subtract(this.start).unit();
+        this.width = width;
+        this.color = color ?? 'black';
+        this.strokeColor = strokeColor ?? 'black';
+        this.vertex = [firstPoint, secondPoint];
 
-        this.refDirection = this.end.subtract(this.start).unit();
+        this.edge = this.secondPoint.subtract(this.firstPoint);
 
-        this.strokeColor = strokeColor;
-        this.color = color;
+        this.length = this.edge.magnitude();
+        this.direction = this.edge.unit();
+        this.refDirection = this.edge.unit();
+        this.position = this.vertex[0]
+            .add(this.direction.multiply(this.length / 2))
+            .add(this.direction.normal().multiply(this.width / 2));
 
-        this.refAngle = Math.acos(Vector.dot(this.refDirection, new Vector(1, 0)));
-
-        if (Vector.cross(this.refDirection, new Vector(1, 0)) > 0) {
-            this.refAngle *= -1;
-        }
-        this.inertia =
-            (this.mass * (this.length + this.radius * 2) ** 2 + (this.radius * 2) ** 2) / 12;
+        this.vertex[2] = this.vertex[1].add(this.direction.normal().multiply(this.width));
+        this.vertex[3] = this.vertex[2].add(this.direction.multiply(-this.length));
+        this.inertia = (this.mass * this.width ** 2 + this.length ** 2) / 12;
 
         if (this.mass === 0) {
             this.inverseInertia = 0;
@@ -77,35 +77,19 @@ export class Capsule extends Entity {
             this.inverseInertia = 1 / this.inertia;
         }
     }
-
     draw(ctx: CanvasRenderingContext2D): void {
         ctx.beginPath();
+        ctx.moveTo(this.vertex[0].x, this.vertex[0].y);
+        ctx.lineTo(this.vertex[1].x, this.vertex[1].y);
+        ctx.lineTo(this.vertex[2].x, this.vertex[2].y);
+        ctx.lineTo(this.vertex[3].x, this.vertex[3].y);
+        ctx.lineTo(this.vertex[0].x, this.vertex[0].y);
+        ctx.closePath();
         ctx.strokeStyle = this.strokeColor;
         ctx.fillStyle = this.color;
-        ctx.arc(
-            this.start.x,
-            this.start.y,
-            this.radius,
-            this.refAngle + this.angle + Math.PI / 2,
-            this.refAngle + this.angle + (3 * Math.PI) / 2
-        );
-
-        ctx.arc(
-            this.end.x,
-            this.end.y,
-            this.radius,
-            this.refAngle + this.angle - Math.PI / 2,
-            this.refAngle + this.angle + Math.PI / 2
-        );
-        ctx.closePath();
-
-        if (this.DEBUG) {
-            ctx.moveTo(this.start.x, this.start.y);
-            ctx.lineTo(this.end.x, this.end.y);
-        }
-
         ctx.stroke();
         ctx.fill();
+        ctx.closePath();
     }
 
     handleControls(controlMap: Controls<LinearMovementMap>): void {
@@ -152,8 +136,20 @@ export class Capsule extends Entity {
 
         this.direction = rotationMatrix.multiplyVector(this.refDirection);
 
-        this.start = this.position.subtract(this.direction.multiply(this.length / 2));
+        this.vertex[0] = this.position
+            .add(this.direction.multiply(-this.length / 2))
+            .add(this.direction.normal().multiply(this.width / 2));
 
-        this.end = this.position.add(this.direction.multiply(this.length / 2));
+        this.vertex[1] = this.position
+            .add(this.direction.multiply(-this.length / 2))
+            .add(this.direction.normal().multiply(-this.width / 2));
+
+        this.vertex[2] = this.position
+            .add(this.direction.multiply(this.length / 2))
+            .add(this.direction.normal().multiply(-this.width / 2));
+
+        this.vertex[3] = this.position
+            .add(this.direction.multiply(this.length / 2))
+            .add(this.direction.normal().multiply(this.width / 2));
     }
 }

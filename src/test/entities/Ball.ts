@@ -48,7 +48,7 @@ export class Ball extends Entity {
         this.strokeColor = strokeColor ?? 'black';
     }
 
-    override drawEntity(ctx: CanvasRenderingContext2D) {
+    override draw(ctx: CanvasRenderingContext2D) {
         ctx.beginPath();
 
         ctx.arc(this.position.x, this.position.y, this.radius, this.startAngle, this.endAngle);

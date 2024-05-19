@@ -11,7 +11,8 @@ import {
     collisionResolution,
     detectCollisionBetweenCapsules,
     penetrationResolutionBetweenCapsules,
-    collisionResolutionBetweenCapsules
+    collisionResolutionBetweenCapsules,
+    separationAxisTheorem
 } from '../physics/utils';
 
 export class Engine {
@@ -45,7 +46,14 @@ export class Engine {
         });
     }
 
-    initMainLoop({ mainBall, balls = [], walls = [], capsules = [], debugEntity }: MainLoopArgs) {
+    initMainLoop({
+        mainBall,
+        boxes = [],
+        balls = [],
+        walls = [],
+        capsules = [],
+        debugEntity
+    }: MainLoopArgs) {
         if (!this.ctx) {
             throw new Error('Canvas context is not initialized');
         }
@@ -55,52 +63,71 @@ export class Engine {
             this.ctx!.clearRect(0, 0, this.canvasSettings.width, this.canvasSettings.height);
             this.ctx!.font = '16px Arial';
 
-            const fullEntities = [mainBall, ...balls];
+            // const fullEntities = [mainBall, ...balls];
 
-            fullEntities.forEach((entity, i) => {
-                entity.drawEntity(this.ctx as CanvasRenderingContext2D);
+            // fullEntities.forEach((entity, i) => {
+            //     entity.draw(this.ctx as CanvasRenderingContext2D);
 
-                walls.forEach((wall) => {
-                    if (detectCollisionWithWall(entity, wall)) {
-                        penetrationResolutionWithWall(entity, wall);
-                        collisionResolutionWithWall(entity, wall);
-                    }
-                });
+            //     walls.forEach((wall) => {
+            //         if (detectCollisionWithWall(entity, wall)) {
+            //             penetrationResolutionWithWall(entity, wall);
+            //             collisionResolutionWithWall(entity, wall);
+            //         }
+            //     });
 
-                // This is inefficient, but it's fine for now
-                for (let j = i + 1; j < fullEntities.length; j++) {
-                    if (detectCollision(entity, fullEntities[j])) {
-                        penetrationResolution(entity, fullEntities[j]);
-                        collisionResolution(entity, fullEntities[j]);
+            //     // This is inefficient, but it's fine for now
+            //     for (let j = i + 1; j < fullEntities.length; j++) {
+            //         if (detectCollision(entity, fullEntities[j])) {
+            //             penetrationResolution(entity, fullEntities[j]);
+            //             collisionResolution(entity, fullEntities[j]);
+            //         }
+            //     }
+
+            //     entity.reposition();
+
+            //     this.distanceVectors[i] = entity.position.subtract(mainBall.position);
+
+            //     this.DEBUG && debugEntity?.(this.ctx as CanvasRenderingContext2D, entity, this, i);
+            // });
+
+            // capsules.forEach((capsule, i) => {
+            //     capsule.draw(this.ctx as CanvasRenderingContext2D);
+
+            //     if (capsule.id === 'MainCapsule') {
+            //         capsule.handleControls(this.pressedKeys);
+            //     }
+
+            //     for (let j = i + 1; j < capsules.length; j++) {
+            //         if (detectCollisionBetweenCapsules(capsule, capsules[j])) {
+            //             penetrationResolutionBetweenCapsules(capsule, capsules[j]);
+            //             collisionResolutionBetweenCapsules(capsule, capsules[j]);
+            //         }
+            //     }
+
+            //     capsule.reposition();
+            // });
+
+            walls.forEach((wall, i) => {
+                wall.draw(this.ctx as CanvasRenderingContext2D);
+
+                for (let j = i + 1; j < walls.length; j++) {
+                    if (separationAxisTheorem(wall, walls[j])) {
+                        this.ctx?.fillText('Collision', 500, 500);
                     }
                 }
-
-                entity.reposition();
-
-                this.distanceVectors[i] = entity.position.subtract(mainBall.position);
-
-                this.DEBUG && debugEntity?.(this.ctx as CanvasRenderingContext2D, entity, this, i);
             });
 
-            walls.forEach((wall) => {
-                wall.drawEntity(this.ctx as CanvasRenderingContext2D);
-            });
+            boxes.forEach((box, i) => {
+                box.draw(this.ctx as CanvasRenderingContext2D);
 
-            capsules.forEach((capsule, i) => {
-                capsule.drawEntity(this.ctx as CanvasRenderingContext2D);
+                if (box.id === 'MainBox') box.handleControls(this.pressedKeys);
 
-                if (capsule.id === 'MainCapsule') {
-                    capsule.handleControls(this.pressedKeys);
-                }
-
-                for (let j = i + 1; j < capsules.length; j++) {
-                    if (detectCollisionBetweenCapsules(capsule, capsules[j])) {
-                        penetrationResolutionBetweenCapsules(capsule, capsules[j]);
-                        collisionResolutionBetweenCapsules(capsule, capsules[j]);
+                for (let j = i + 1; j < boxes.length; j++) {
+                    if (separationAxisTheorem(box, boxes[j])) {
+                        this.ctx?.fillText('Collision', 500, 500);
                     }
                 }
-
-                capsule.reposition();
+                box.reposition();
             });
 
             requestAnimationFrame(loop);

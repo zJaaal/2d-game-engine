@@ -123,4 +123,6 @@ export interface EntitySettings {
     friction: number;
     id: string;
     DEBUG?: boolean;
+    vertex?: Vector[];
+    direction?: Vector;
 }

@@ -34,4 +34,12 @@ export interface CapsuleSettings extends EntitySettings {
     color: string;
 }
 
+export interface BoxSettings extends EntitySettings {
+    width: number;
+    color: string;
+    strokeColor: string;
+    firstPoint: Vector;
+    secondPoint: Vector;
+}
+
 export const FULL_DEGREES = Math.PI * 2;

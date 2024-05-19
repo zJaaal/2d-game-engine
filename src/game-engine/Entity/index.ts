@@ -13,6 +13,8 @@ export class Entity {
     inverseMass: number;
     angle: number;
     rotationFactor: number;
+    vertex: Vector[];
+    direction: Vector;
     protected DEBUG: boolean;
 
     constructor({
@@ -26,7 +28,9 @@ export class Entity {
         elasticity,
         mass,
         angle,
-        rotationFactor
+        rotationFactor,
+        vertex,
+        direction
     }: EntitySettings) {
         this.position = position;
         this.speed = speed;
@@ -39,11 +43,13 @@ export class Entity {
         this.mass = mass;
         this.angle = angle;
         this.rotationFactor = rotationFactor;
+        this.direction = direction ?? new Vector(0, 0);
 
         this.inverseMass = this.mass ? 1 / this.mass : 0;
+        this.vertex = vertex ?? [];
     }
 
-    drawEntity(_ctx: CanvasRenderingContext2D) {
+    draw(_ctx: CanvasRenderingContext2D) {
         throw new Error('Method not implemented: drawPlayer');
     }
 
