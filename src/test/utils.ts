@@ -31,7 +31,7 @@ export function genRandomBalls(n: number, ballSettings: BallSettings): Ball[] {
 
         let mass = radius * 0.06;
 
-        let elasticity = Math.random();
+        let elasticity = Math.random() * 2;
 
         balls.push(
             new Ball({
