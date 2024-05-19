@@ -1,4 +1,5 @@
 import { Vector } from '../physics/vector';
+import { Shape } from '../shape';
 import { Controls, EntitySettings, KeyCodes } from './types';
 
 export class Entity {
@@ -13,8 +14,8 @@ export class Entity {
     inverseMass: number;
     angle: number;
     rotationFactor: number;
-    vertex: Vector[];
-    direction: Vector;
+    protected vertexes: Vector[];
+    components: Shape[];
     protected DEBUG: boolean;
 
     constructor({
@@ -29,7 +30,7 @@ export class Entity {
         mass,
         angle,
         rotationFactor,
-        vertex,
+        vertexes,
         direction
     }: EntitySettings) {
         this.position = position;
@@ -43,21 +44,23 @@ export class Entity {
         this.mass = mass;
         this.angle = angle;
         this.rotationFactor = rotationFactor;
-        this.direction = direction ?? new Vector(0, 0);
 
         this.inverseMass = this.mass ? 1 / this.mass : 0;
-        this.vertex = vertex ?? [];
+        this.vertexes = vertexes ?? [];
+        this.components = [];
     }
 
-    draw(_ctx: CanvasRenderingContext2D) {
-        throw new Error('Method not implemented: drawPlayer');
+    handlePressedKeys(_pressedKeys: Controls<KeyCodes>) {}
+
+    reposition() {}
+
+    draw(_ctx: CanvasRenderingContext2D) {}
+
+    getAxes(entity?: Entity): Vector[] {
+        return this.components.flatMap((component) => component.getAxes(entity));
     }
 
-    handleControls(_controlMap: Controls<KeyCodes>) {
-        throw new Error('Method not implemented: handleControls');
-    }
-
-    reposition() {
-        throw new Error('Method not implemented: reposition');
+    getVertexes(axis?: Vector): Vector[] {
+        return this.components.flatMap((component) => component.getVertexes(axis));
     }
 }

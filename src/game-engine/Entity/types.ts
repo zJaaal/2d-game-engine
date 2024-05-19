@@ -1,4 +1,5 @@
 import { Vector } from '../physics/vector';
+import { Shape } from '../shape';
 
 export enum KeyCodes {
     BACKSPACE = 'Backspace',
@@ -112,6 +113,7 @@ export enum KeyCodes {
 export type Controls<T> = Map<T extends KeyCodes ? T : string, boolean>;
 
 export interface EntitySettings {
+    components?: Shape[];
     position: Vector;
     speed: Vector;
     elasticity: number;
@@ -123,6 +125,6 @@ export interface EntitySettings {
     friction: number;
     id: string;
     DEBUG?: boolean;
-    vertex?: Vector[];
+    vertexes?: Vector[];
     direction?: Vector;
 }

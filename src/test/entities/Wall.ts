@@ -2,6 +2,7 @@ import { Vector } from '../../game-engine/physics/vector';
 import { Entity } from '../../game-engine/entity';
 
 import { WallSettings } from './types';
+import { Line } from '../../game-engine/shapes/line';
 
 export class Wall extends Entity {
     start: Vector;
@@ -9,7 +10,7 @@ export class Wall extends Entity {
     color: string;
     direction: Vector;
 
-    constructor({ position, end, id, color, elasticity, start, vertex }: WallSettings) {
+    constructor({ position, end, id, color, elasticity, start, vertexes }: WallSettings) {
         super({
             position: position ?? new Vector(0, 0),
             elasticity: elasticity ?? 1,
@@ -21,18 +22,19 @@ export class Wall extends Entity {
             id: 'Wall-' + id,
             rotationFactor: 0,
             angle: 0,
-            vertex
+            vertexes,
+            components: []
         });
+
+        this.components = [new Line({ start, end, color })];
 
         this.end = end;
         this.start = start;
         this.color = color;
         this.direction = this.end.subtract(this.start).unit();
-
-        this.vertex = [this.start, this.end];
     }
 
-    draw(ctx: CanvasRenderingContext2D): void {
+    override draw(ctx: CanvasRenderingContext2D): void {
         ctx.beginPath();
         ctx.strokeStyle = this.color;
         ctx.moveTo(this.start.x, this.start.y);

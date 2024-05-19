@@ -1,23 +1,22 @@
 import { Entity } from '../../game-engine/entity';
 import { Controls } from '../../game-engine/entity/types';
-import { createRotationMatrix } from '../../game-engine/physics/matrix';
 import { Vector } from '../../game-engine/physics/vector';
+import { Circle } from '../../game-engine/shapes/circle';
+import { Rectangle } from '../../game-engine/shapes/rectangle';
 
 import { CapsuleSettings, LinearMovementMap } from './types';
 
 export class Capsule extends Entity {
-    end: Vector;
-    start: Vector;
-    radius: number;
-    refDirection: Vector;
     strokeColor: string;
     color: string;
     length: number;
-    direction: Vector;
-    refAngle: number;
     angleSpeed: number = 0;
     inertia: number;
     inverseInertia: number;
+
+    start: Vector;
+    end: Vector;
+    radius: number;
 
     constructor({
         position,
@@ -50,24 +49,41 @@ export class Capsule extends Entity {
             id: id
         });
 
-        this.end = end;
+        this.components = [
+            new Circle({ position: start, radius, color: color, strokeColor }),
+            new Circle({ position: end, radius, color: color, strokeColor })
+        ];
+
+        const firstCircle: Circle = this.components[0] as Circle;
+        const secondCircle: Circle = this.components[1] as Circle;
+
+        const rectangleFirstVertex = secondCircle.position.add(
+            secondCircle.position.subtract(firstCircle.position).unit().normal().multiply(radius)
+        );
+
+        const rectangleSecondVertex = firstCircle.position.add(
+            secondCircle.position.subtract(firstCircle.position).unit().normal().multiply(radius)
+        );
+
+        this.components.unshift(
+            new Rectangle({
+                firstPoint: rectangleFirstVertex,
+                secondPoint: rectangleSecondVertex,
+                color: color,
+                strokeColor: strokeColor,
+                width: radius * 2
+            })
+        );
+
         this.start = start;
+        this.end = end;
         this.radius = radius;
-        this.position = this.start.add(this.end).multiply(0.5);
-        this.length = this.end.subtract(this.start).magnitude();
 
-        this.direction = this.end.subtract(this.start).unit();
-
-        this.refDirection = this.end.subtract(this.start).unit();
+        this.length = end.subtract(start).magnitude();
 
         this.strokeColor = strokeColor;
         this.color = color;
 
-        this.refAngle = Math.acos(Vector.dot(this.refDirection, new Vector(1, 0)));
-
-        if (Vector.cross(this.refDirection, new Vector(1, 0)) > 0) {
-            this.refAngle *= -1;
-        }
         this.inertia =
             (this.mass * (this.length + this.radius * 2) ** 2 + (this.radius * 2) ** 2) / 12;
 
@@ -78,51 +94,32 @@ export class Capsule extends Entity {
         }
     }
 
-    draw(ctx: CanvasRenderingContext2D): void {
-        ctx.beginPath();
-        ctx.strokeStyle = this.strokeColor;
-        ctx.fillStyle = this.color;
-        ctx.arc(
-            this.start.x,
-            this.start.y,
-            this.radius,
-            this.refAngle + this.angle + Math.PI / 2,
-            this.refAngle + this.angle + (3 * Math.PI) / 2
-        );
-
-        ctx.arc(
-            this.end.x,
-            this.end.y,
-            this.radius,
-            this.refAngle + this.angle - Math.PI / 2,
-            this.refAngle + this.angle + Math.PI / 2
-        );
-        ctx.closePath();
-
-        if (this.DEBUG) {
-            ctx.moveTo(this.start.x, this.start.y);
-            ctx.lineTo(this.end.x, this.end.y);
-        }
-
-        ctx.stroke();
-        ctx.fill();
+    override draw(ctx: CanvasRenderingContext2D): void {
+        this.components.forEach((component) => component.draw(ctx));
     }
 
-    handleControls(controlMap: Controls<LinearMovementMap>): void {
-        const UP = controlMap.get(LinearMovementMap.UP) || controlMap.get(LinearMovementMap.ALT_UP);
+    override handlePressedKeys(pressedKeysMap: Controls<LinearMovementMap>): void {
+        const UP =
+            pressedKeysMap.get(LinearMovementMap.UP) ||
+            pressedKeysMap.get(LinearMovementMap.ALT_UP);
         const DOWN =
-            controlMap.get(LinearMovementMap.DOWN) || controlMap.get(LinearMovementMap.ALT_DOWN);
+            pressedKeysMap.get(LinearMovementMap.DOWN) ||
+            pressedKeysMap.get(LinearMovementMap.ALT_DOWN);
         const LEFT =
-            controlMap.get(LinearMovementMap.LEFT) || controlMap.get(LinearMovementMap.ALT_LEFT);
+            pressedKeysMap.get(LinearMovementMap.LEFT) ||
+            pressedKeysMap.get(LinearMovementMap.ALT_LEFT);
         const RIGHT =
-            controlMap.get(LinearMovementMap.RIGHT) || controlMap.get(LinearMovementMap.ALT_RIGHT);
+            pressedKeysMap.get(LinearMovementMap.RIGHT) ||
+            pressedKeysMap.get(LinearMovementMap.ALT_RIGHT);
+
+        const rectangle = this.components[0] as Rectangle;
 
         if (UP) {
-            this.acceleration = this.direction.multiply(-this.accelerationFactor);
+            this.acceleration = rectangle.direction.multiply(-this.accelerationFactor);
         }
 
         if (DOWN) {
-            this.acceleration = this.direction.multiply(this.accelerationFactor);
+            this.acceleration = rectangle.direction.multiply(this.accelerationFactor);
         }
 
         if (!UP && !DOWN) {
@@ -138,7 +135,7 @@ export class Capsule extends Entity {
         }
     }
 
-    reposition(): void {
+    override reposition(): void {
         this.acceleration = this.acceleration.unit().multiply(this.accelerationFactor);
 
         this.speed = this.speed.add(this.acceleration).multiply(1 - this.friction);
@@ -148,12 +145,20 @@ export class Capsule extends Entity {
         this.angle += this.angleSpeed;
         this.angleSpeed *= 1 - this.friction;
 
-        let rotationMatrix = createRotationMatrix(this.angle);
+        const rectangle = this.components[0] as Rectangle;
+        const startCircle = this.components[1] as Circle;
+        const endCircle = this.components[2] as Circle;
 
-        this.direction = rotationMatrix.multiplyVector(this.refDirection);
+        const startCirclePosition = rectangle.position.add(
+            rectangle.direction.multiply(-rectangle.length / 2)
+        );
+        const endCirclePosition = rectangle.position.add(
+            rectangle.direction.multiply(rectangle.length / 2)
+        );
 
-        this.start = this.position.subtract(this.direction.multiply(this.length / 2));
+        rectangle.move(this.speed, this.angle);
 
-        this.end = this.position.add(this.direction.multiply(this.length / 2));
+        startCircle.setPosition(startCirclePosition);
+        endCircle.setPosition(endCirclePosition);
     }
 }

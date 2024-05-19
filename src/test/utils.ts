@@ -41,7 +41,7 @@ export function genRandomBalls(n: number, ballSettings: BallSettings): Ball[] {
                 elasticity,
                 position: RNGPosition(),
                 id: `ball-${i}`,
-                color: RNGColor(),
+                color: 'transparent',
                 strokeColor: RNGColor()
             })
         );
@@ -167,11 +167,6 @@ export function genRandomBoxes(n: number, boxSettings: BoxSettings) {
         let firstPoint = RNGPosition();
         let secondPoint = RNGPosition();
 
-        console.log({
-            firstPoint,
-            secondPoint
-        });
-
         boxes.push(
             new Box({
                 ...boxSettings,
@@ -181,7 +176,7 @@ export function genRandomBoxes(n: number, boxSettings: BoxSettings) {
                 firstPoint,
                 secondPoint,
                 id: i ? `box-${i}` : boxSettings.id,
-                color: RNGColor(),
+                color: 'transparent',
                 strokeColor: RNGColor()
             })
         );

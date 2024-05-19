@@ -1,5 +1,8 @@
 import { Entity } from '../../game-engine/entity';
 import { Controls } from '../../game-engine/entity/types';
+import { closestVertexToPoint } from '../../game-engine/physics/utils';
+import { Vector } from '../../game-engine/physics/vector';
+import { Circle } from '../../game-engine/shapes/circle';
 import { BallSettings, FULL_DEGREES, LinearMovementMap } from './types';
 
 export class Ball extends Entity {
@@ -10,6 +13,7 @@ export class Ball extends Entity {
     strokeColor: string;
 
     constructor({
+        components,
         position,
         speed,
         id,
@@ -38,7 +42,8 @@ export class Ball extends Entity {
             mass,
             elasticity,
             angle,
-            rotationFactor
+            rotationFactor,
+            components
         });
 
         this.radius = radius;
@@ -46,46 +51,27 @@ export class Ball extends Entity {
         this.endAngle = endAngle ?? FULL_DEGREES;
         this.color = color ?? 'black';
         this.strokeColor = strokeColor ?? 'black';
+
+        this.components = [new Circle({ position, radius, color, strokeColor })];
     }
 
     override draw(ctx: CanvasRenderingContext2D) {
-        ctx.beginPath();
-
-        ctx.arc(this.position.x, this.position.y, this.radius, this.startAngle, this.endAngle);
-
-        ctx.strokeStyle = this.strokeColor;
-        ctx.stroke();
-        ctx.fillStyle = this.color;
-        ctx.fill();
-
-        if (this.DEBUG) {
-            ctx.beginPath();
-            this.acceleration.unit().draw({
-                x: this.position.x,
-                y: this.position.y,
-                color: 'blue',
-                scalar: 50,
-                ctx
-            });
-
-            this.speed.draw({
-                x: this.position.x,
-                y: this.position.y,
-                color: 'green',
-                scalar: 10,
-                ctx
-            });
-        }
+        this.components.forEach((component) => component.draw(ctx));
     }
 
-    override handleControls(controlMap: Controls<LinearMovementMap>): void {
-        const UP = controlMap.get(LinearMovementMap.UP) || controlMap.get(LinearMovementMap.ALT_UP);
+    override handlePressedKeys(pressedKeysMap: Controls<LinearMovementMap>): void {
+        const UP =
+            pressedKeysMap.get(LinearMovementMap.UP) ||
+            pressedKeysMap.get(LinearMovementMap.ALT_UP);
         const DOWN =
-            controlMap.get(LinearMovementMap.DOWN) || controlMap.get(LinearMovementMap.ALT_DOWN);
+            pressedKeysMap.get(LinearMovementMap.DOWN) ||
+            pressedKeysMap.get(LinearMovementMap.ALT_DOWN);
         const LEFT =
-            controlMap.get(LinearMovementMap.LEFT) || controlMap.get(LinearMovementMap.ALT_LEFT);
+            pressedKeysMap.get(LinearMovementMap.LEFT) ||
+            pressedKeysMap.get(LinearMovementMap.ALT_LEFT);
         const RIGHT =
-            controlMap.get(LinearMovementMap.RIGHT) || controlMap.get(LinearMovementMap.ALT_RIGHT);
+            pressedKeysMap.get(LinearMovementMap.RIGHT) ||
+            pressedKeysMap.get(LinearMovementMap.ALT_RIGHT);
 
         if (UP) {
             this.acceleration.y = -this.accelerationFactor;
@@ -117,6 +103,8 @@ export class Ball extends Entity {
         this.speed = this.speed.add(this.acceleration);
         this.speed = this.speed.multiply(1 - this.friction);
 
-        this.position = this.position.add(this.speed);
+        this.components.forEach((component) => {
+            component.move(this.speed);
+        });
     }
 }

@@ -1,8 +1,8 @@
 import { Engine } from '.';
 import { Ball } from '../../test/entities/Ball';
-import { Box } from '../../test/entities/Box';
 import { Capsule } from '../../test/entities/Capsule';
-import { Wall } from '../../test/entities/Wall';
+
+import { Entity } from '../entity';
 
 export interface EngineSettings {
     canvas: CanvasSettings;
@@ -24,10 +24,7 @@ export type DebugEntity = (
 ) => void;
 
 export interface MainLoopArgs {
-    mainBall: Ball;
-    balls?: Ball[];
-    boxes?: Box[];
-    walls?: Wall[];
+    entities?: Entity[];
     capsules?: Capsule[];
     debugEntity?: DebugEntity;
 }

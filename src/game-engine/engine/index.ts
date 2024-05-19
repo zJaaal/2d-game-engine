@@ -2,18 +2,7 @@ import { Vector } from '../physics/vector';
 
 import { Controls, KeyCodes } from '../entity/types';
 import { CanvasSettings, EngineSettings, MainLoopArgs } from './types';
-import {
-    detectCollisionWithWall,
-    penetrationResolutionWithWall,
-    collisionResolutionWithWall,
-    detectCollision,
-    penetrationResolution,
-    collisionResolution,
-    detectCollisionBetweenCapsules,
-    penetrationResolutionBetweenCapsules,
-    collisionResolutionBetweenCapsules,
-    separationAxisTheorem
-} from '../physics/utils';
+import { separationAxisTheorem } from '../physics/utils';
 
 export class Engine {
     canvasSettings: CanvasSettings;
@@ -46,88 +35,35 @@ export class Engine {
         });
     }
 
-    initMainLoop({
-        mainBall,
-        boxes = [],
-        balls = [],
-        walls = [],
-        capsules = [],
-        debugEntity
-    }: MainLoopArgs) {
+    initMainLoop({ entities = [], capsules = [], debugEntity }: MainLoopArgs) {
         if (!this.ctx) {
             throw new Error('Canvas context is not initialized');
         }
 
         const loop = () => {
-            mainBall.handleControls(this.pressedKeys);
             this.ctx!.clearRect(0, 0, this.canvasSettings.width, this.canvasSettings.height);
             this.ctx!.font = '16px Arial';
 
-            // const fullEntities = [mainBall, ...balls];
+            entities.forEach((entity, i) => {
+                entity.draw(this.ctx as CanvasRenderingContext2D);
 
-            // fullEntities.forEach((entity, i) => {
-            //     entity.draw(this.ctx as CanvasRenderingContext2D);
+                if (entity.id === 'Player-Entity') entity.handlePressedKeys(this.pressedKeys);
 
-            //     walls.forEach((wall) => {
-            //         if (detectCollisionWithWall(entity, wall)) {
-            //             penetrationResolutionWithWall(entity, wall);
-            //             collisionResolutionWithWall(entity, wall);
-            //         }
-            //     });
+                for (let j = i + 1; j < entities.length; j++) {
+                    const { contactVertex, collide, minOverlap, smallestAxis } =
+                        separationAxisTheorem(entity, entities[j]);
 
-            //     // This is inefficient, but it's fine for now
-            //     for (let j = i + 1; j < fullEntities.length; j++) {
-            //         if (detectCollision(entity, fullEntities[j])) {
-            //             penetrationResolution(entity, fullEntities[j]);
-            //             collisionResolution(entity, fullEntities[j]);
-            //         }
-            //     }
-
-            //     entity.reposition();
-
-            //     this.distanceVectors[i] = entity.position.subtract(mainBall.position);
-
-            //     this.DEBUG && debugEntity?.(this.ctx as CanvasRenderingContext2D, entity, this, i);
-            // });
-
-            // capsules.forEach((capsule, i) => {
-            //     capsule.draw(this.ctx as CanvasRenderingContext2D);
-
-            //     if (capsule.id === 'MainCapsule') {
-            //         capsule.handleControls(this.pressedKeys);
-            //     }
-
-            //     for (let j = i + 1; j < capsules.length; j++) {
-            //         if (detectCollisionBetweenCapsules(capsule, capsules[j])) {
-            //             penetrationResolutionBetweenCapsules(capsule, capsules[j]);
-            //             collisionResolutionBetweenCapsules(capsule, capsules[j]);
-            //         }
-            //     }
-
-            //     capsule.reposition();
-            // });
-
-            walls.forEach((wall, i) => {
-                wall.draw(this.ctx as CanvasRenderingContext2D);
-
-                for (let j = i + 1; j < walls.length; j++) {
-                    if (separationAxisTheorem(wall, walls[j])) {
-                        this.ctx?.fillText('Collision', 500, 500);
+                    if (collide && smallestAxis && contactVertex) {
+                        smallestAxis.draw({
+                            x: contactVertex.x,
+                            y: contactVertex.y,
+                            color: 'red',
+                            scalar: minOverlap ?? 1,
+                            ctx: this.ctx as CanvasRenderingContext2D
+                        });
                     }
                 }
-            });
-
-            boxes.forEach((box, i) => {
-                box.draw(this.ctx as CanvasRenderingContext2D);
-
-                if (box.id === 'MainBox') box.handleControls(this.pressedKeys);
-
-                for (let j = i + 1; j < boxes.length; j++) {
-                    if (separationAxisTheorem(box, boxes[j])) {
-                        this.ctx?.fillText('Collision', 500, 500);
-                    }
-                }
-                box.reposition();
+                entity.reposition();
             });
 
             requestAnimationFrame(loop);

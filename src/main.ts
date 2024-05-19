@@ -15,14 +15,14 @@ import { CanvasSettings, DebugEntity } from './game-engine/engine/types';
 import { Vector } from './game-engine/physics/vector';
 
 import { BallSettings, CapsuleSettings } from './test/entities/types';
-import { Wall } from './test/entities/Wall';
-import { Capsule } from './test/entities/Capsule';
-import { Box } from './test/entities/Box';
 
-let balls: Ball[] = [];
+import { Capsule } from './test/entities/Capsule';
+
+import { Entity } from './game-engine/entity';
+
 let capsules: Capsule[] = [];
-let walls: Wall[] = [];
-let boxes: Box[] = [];
+
+let entities: Entity[] = [];
 
 const canvasSettings: CanvasSettings = {
     width: CANVAS_WIDTH,
@@ -46,7 +46,7 @@ const sharedSettings = {
 
 const ballInitialSettings: BallSettings = {
     ...sharedSettings,
-    id: 'MainBall',
+    id: 'Player-Entity',
     radius: 40,
     color: 'transparent',
     strokeColor: 'black'
@@ -54,7 +54,7 @@ const ballInitialSettings: BallSettings = {
 
 const capsuleInitialSettings: CapsuleSettings = {
     ...sharedSettings,
-    id: 'MainCapsule',
+    id: 'Player-Entity',
     end: new Vector(0, 0),
     start: new Vector(1, 1),
     radius: 40,
@@ -64,24 +64,26 @@ const capsuleInitialSettings: CapsuleSettings = {
 
 const boxInitialSettings = {
     ...sharedSettings,
-    id: 'MainBox',
+    id: 'Player-Entity',
     firstPoint: new Vector(0, 0),
     secondPoint: new Vector(1, 1),
     width: 40,
+    friction: 0.6,
     color: 'transparent',
     strokeColor: 'black'
 };
 
 const mainBall = new Ball(ballInitialSettings);
 
-// balls = genRandomBalls(20, ballInitialSettings);
+// entities.push(mainBall);
 
-// capsules = genRandomCapsules(3, capsuleInitialSettings);
+// entities.push(...genRandomBalls(4, ballInitialSettings));
 
-// walls.push(...genCanvasWalls(CANVAS_WIDTH, CANVAS_HEIGHT));
-// walls.push(...genRandomWalls(5));
+entities.push(...genRandomCapsules(1, capsuleInitialSettings));
 
-boxes.push(...genRandomBoxes(3, boxInitialSettings));
+entities.push(...genRandomWalls(1));
+
+// entities.push(...genRandomBoxes(1, boxInitialSettings));
 
 const engine = new Engine({
     canvas: canvasSettings,
@@ -98,4 +100,4 @@ const debugEntity: DebugEntity = (ctx, entity, engine, i) => {
     );
 };
 
-engine.initMainLoop({ mainBall, balls, boxes, walls, capsules, debugEntity });
+engine.initMainLoop({ entities, capsules, debugEntity });
