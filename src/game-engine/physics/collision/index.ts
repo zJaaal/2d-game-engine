@@ -32,10 +32,70 @@ export class Collision {
         );
     }
 
-    collisionResponse() {}
+    collisionResponse() {
+        const entities = [
+            {
+                entity: this.entityA,
+                point: this.collisionPoint
+            },
+            {
+                entity: this.entityB,
+                point: this.collisionPoint
+            }
+        ];
+        const [entityA, entityB] = entities.map(({ entity, point }) => {
+            // 1. Closing Velocity
+
+            let collisionArm = point.subtract(entity.components[0].position);
+            let rotationalVelocity = new Vector(
+                -entity.angleSpeed * collisionArm.y,
+                entity.angleSpeed * collisionArm.x
+            );
+            let closingVelocity = entity.speed.add(rotationalVelocity);
+            // 2. Impulse augmentation
+            let impulseAugmentation = Vector.cross(collisionArm, this.normal);
+            impulseAugmentation = impulseAugmentation ** 2 * entity.inverseInertia;
+
+            return {
+                closingVelocity,
+                impulseAugmentation,
+                collisionArm
+            };
+        });
+
+        let relativeVelocity = entityA.closingVelocity.subtract(entityB.closingVelocity);
+
+        let separatingVelocity = Vector.dot(relativeVelocity, this.normal);
+
+        let newSeparatingVelocity =
+            -separatingVelocity * Math.min(this.entityA.elasticity, this.entityB.elasticity);
+
+        let separatingVelocityDiff = newSeparatingVelocity - separatingVelocity;
+
+        let impulse =
+            separatingVelocityDiff /
+            (this.entityA.inverseMass +
+                this.entityB.inverseMass +
+                entityA.impulseAugmentation +
+                entityB.impulseAugmentation);
+
+        let impulseVector = this.normal.multiply(impulse);
+
+        // 3. Calculate the new speed and angle speed
+        this.entityA.speed = this.entityA.speed.add(
+            impulseVector.multiply(this.entityA.inverseMass)
+        );
+        this.entityB.speed = this.entityB.speed.add(
+            impulseVector.multiply(-this.entityB.inverseMass)
+        );
+        this.entityA.angleSpeed +=
+            Vector.cross(entityA.collisionArm, impulseVector) * this.entityA.inverseInertia;
+        this.entityB.angleSpeed -=
+            Vector.cross(entityB.collisionArm, impulseVector) * this.entityB.inverseInertia;
+    }
 
     static separationAxisTheorem(shapeA: Shape, shapeB: Shape): SeparationAxisTheorem | undefined {
-        let minOverlap = Infinity;
+        let minPenetrationDepth = Infinity;
         let smallestAxis = new Vector(0, 0);
         let vertexShape = shapeA;
 
@@ -70,8 +130,8 @@ export class Collision {
                     }
                 }
 
-                if (overlap < minOverlap) {
-                    minOverlap = overlap;
+                if (overlap < minPenetrationDepth) {
+                    minPenetrationDepth = overlap;
                     smallestAxis = axis;
 
                     if (!i) {
@@ -98,7 +158,7 @@ export class Collision {
         return {
             contactVertex,
             smallestAxis,
-            penetrationDepth: minOverlap
+            penetrationDepth: minPenetrationDepth
         };
     }
 

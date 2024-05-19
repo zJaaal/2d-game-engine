@@ -1,5 +1,6 @@
 import { Entity } from '../../game-engine/entity';
 import { Controls } from '../../game-engine/entity/types';
+
 import { Circle } from '../../game-engine/shapes/circle';
 import { BallSettings, FULL_DEGREES, LinearMovementMap } from './types';
 
@@ -49,8 +50,6 @@ export class Ball extends Entity {
         this.endAngle = endAngle ?? FULL_DEGREES;
         this.color = color ?? 'black';
         this.strokeColor = strokeColor ?? 'black';
-
-        this.inertia = 0;
 
         this.components = [new Circle({ position, radius, color, strokeColor })];
     }

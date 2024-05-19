@@ -12,7 +12,7 @@ export class Engine {
 
     pressedKeys: Controls<KeyCodes> = new Map<KeyCodes, boolean>();
 
-    collsions: Collision[] = [];
+    collisions: Collision[] = [];
 
     DEBUG = false;
 
@@ -44,22 +44,24 @@ export class Engine {
             this.ctx!.clearRect(0, 0, this.canvasSettings.width, this.canvasSettings.height);
             this.ctx!.font = '16px Arial';
 
-            this.collsions = [];
+            this.collisions.length = 0;
 
-            let bestSat = {
-                penetrationDepth: -Infinity,
-                smallestAxis: new Vector(0, 0),
-                contactVertex: new Vector(0, 0)
-            };
+            entities.forEach((entity) => {
+                entity.draw(this.ctx as CanvasRenderingContext2D);
+                if (entity.id === 'Player-Entity') entity.handlePressedKeys(this.pressedKeys);
+                entity.reposition();
+            });
 
             entities.forEach((entity, i) => {
-                entity.draw(this.ctx as CanvasRenderingContext2D);
+                for (let nextEntity = i + 1; nextEntity < entities.length; nextEntity++) {
+                    let bestSat = {
+                        penetrationDepth: -Infinity,
+                        smallestAxis: new Vector(0, 0),
+                        contactVertex: new Vector(0, 0)
+                    };
 
-                if (entity.id === 'Player-Entity') entity.handlePressedKeys(this.pressedKeys);
-
-                for (let j = i + 1; j < entities.length; j++) {
                     for (let firstComponent of entity.components) {
-                        for (let secondComponent of entities[j].components) {
+                        for (let secondComponent of entities[nextEntity].components) {
                             const satResult = Collision.separationAxisTheorem(
                                 firstComponent,
                                 secondComponent
@@ -74,41 +76,21 @@ export class Engine {
                         }
                     }
 
-                    if (bestSat.penetrationDepth > 0) {
-                        bestSat.smallestAxis.draw({
-                            x: bestSat.contactVertex.x,
-                            y: bestSat.contactVertex.y,
-                            color: 'red',
-                            scalar: bestSat.penetrationDepth,
-                            ctx: this.ctx as CanvasRenderingContext2D
-                        });
-
-                        const newCollsion = new Collision({
-                            entityA: entities[i],
-                            entityB: entities[j],
+                    if (bestSat.penetrationDepth !== -Infinity) {
+                        const newCollision = new Collision({
+                            entityA: entity,
+                            entityB: entities[nextEntity],
                             normal: bestSat.smallestAxis,
                             penetrationDepth: bestSat.penetrationDepth,
                             collisionPoint: bestSat.contactVertex
                         });
 
-                        this.collsions.push(newCollsion);
-
-                        this.ctx?.beginPath();
-                        this.ctx?.arc(
-                            bestSat.contactVertex.x,
-                            bestSat.contactVertex.y,
-                            5,
-                            0,
-                            2 * Math.PI
-                        );
-                        this.ctx?.stroke();
+                        this.collisions.push(newCollision);
                     }
                 }
-
-                entity.reposition();
             });
 
-            this.collsions.forEach((collision) => {
+            this.collisions.forEach((collision) => {
                 collision.penetrationResolution();
                 collision.collisionResponse();
             });

@@ -40,7 +40,7 @@ export class Entity {
         this.mass = mass;
         this.inverseMass = this.mass ? 1 / this.mass : 0;
         this.inertia = 0;
-        this.inverseInertia = mass ? 1 / this.inertia : 0;
+        this.inverseInertia = this.inertia ? 1 / this.inertia : 0;
         this.elasticity = elasticity;
 
         this.accelerationFactor = accelerationFactor;

@@ -29,6 +29,7 @@ const canvasSettings: CanvasSettings = {
 const sharedSettings = {
     position: RNGPosition(),
     speed: new Vector(0, 0),
+    angleSpeed: 0,
     accelerationFactor: Math.random() * 1 + 0.5,
     elasticity: 1,
     mass: 40 * 0.06,
@@ -78,7 +79,7 @@ entities.push(...genRandomCapsules(1, capsuleInitialSettings));
 
 entities.push(...genRandomWalls(1));
 
-entities.push(...genRandomBoxes(1, boxInitialSettings));
+// entities.push(...genRandomBoxes(1, boxInitialSettings));
 
 const engine = new Engine({
     canvas: canvasSettings,

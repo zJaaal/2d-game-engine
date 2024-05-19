@@ -80,8 +80,10 @@ export class Capsule extends Entity {
         this.strokeColor = strokeColor;
         this.color = color;
 
+        const rectangle = this.components[0] as Rectangle;
+
         this.inertia =
-            (this.mass * (this.length + this.radius * 2) ** 2 + (this.radius * 2) ** 2) / 12;
+            (this.mass * (rectangle.length + this.radius * 2) ** 2 + (this.radius * 2) ** 2) / 12;
     }
 
     override draw(ctx: CanvasRenderingContext2D): void {

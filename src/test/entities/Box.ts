@@ -8,7 +8,6 @@ export class Box extends Entity {
     width: number;
     color: string;
     strokeColor: string;
-    length: number;
 
     constructor({
         position,
@@ -56,9 +55,9 @@ export class Box extends Entity {
         this.color = color ?? 'black';
         this.strokeColor = strokeColor ?? 'black';
 
-        this.length = secondPoint.subtract(firstPoint).magnitude();
+        const rectangle = this.components[0] as Rectangle;
 
-        this.inertia = (this.mass * this.width ** 2 + this.length ** 2) / 12;
+        this.inertia = (this.mass * rectangle.width ** 2 + rectangle.length ** 2) / 12;
     }
     override draw(ctx: CanvasRenderingContext2D): void {
         this.components.forEach((component) => component.draw(ctx));
@@ -99,6 +98,7 @@ export class Box extends Entity {
             if (DOWN) {
                 this.acceleration = rectangle.direction.multiply(this.accelerationFactor);
             }
+
             if (!UP && !DOWN) {
                 this.acceleration = new Vector(0, 0);
             }
