@@ -31,17 +31,14 @@ export function genRandomBalls(n: number, ballSettings: BallSettings): Ball[] {
 
         let mass = radius * 0.06;
 
-        let elasticity = Math.random() * 2;
-
         balls.push(
             new Ball({
                 ...ballSettings,
                 radius,
                 mass,
-                elasticity,
                 position: RNGPosition(),
                 id: `ball-${i}`,
-                color: 'transparent',
+                color: RNGColor(),
                 strokeColor: RNGColor()
             })
         );
@@ -59,7 +56,6 @@ export function genRandomWalls(n: number) {
                 end: RNGPosition(),
                 id: `wall-${i}`,
                 color: RNGColor(),
-                elasticity: 0,
                 angle: 0,
                 rotationFactor: 0,
                 friction: 0
@@ -76,17 +72,18 @@ export function genRandomCapsules(n: number, capsuleSettings: CapsuleSettings) {
 
         let mass = radius * 0.06;
 
-        let elasticity = Math.random() * 2;
+        let start = RNGPosition();
+
+        let end = start.multiply(Math.random() * 2 + 1);
 
         capsules.push(
             new Capsule({
                 ...capsuleSettings,
                 radius,
                 mass,
-                elasticity,
                 position: new Vector(0, 0),
-                start: RNGPosition(),
-                end: RNGPosition(),
+                start,
+                end,
                 id: i ? `capsule-${i}` : capsuleSettings.id,
                 color: 'transparent',
                 strokeColor: 'black'
@@ -162,21 +159,19 @@ export function genRandomBoxes(n: number, boxSettings: BoxSettings) {
 
         let mass = width * 0.06;
 
-        let elasticity = Math.random();
-
         let firstPoint = RNGPosition();
-        let secondPoint = RNGPosition();
+
+        let secondPoint = firstPoint.multiply(Math.random() * 2 + 1);
 
         boxes.push(
             new Box({
                 ...boxSettings,
                 width,
                 mass,
-                elasticity,
                 firstPoint,
                 secondPoint,
                 id: i ? `box-${i}` : boxSettings.id,
-                color: 'transparent',
+                color: RNGColor(),
                 strokeColor: RNGColor()
             })
         );

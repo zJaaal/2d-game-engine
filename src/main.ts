@@ -8,7 +8,8 @@ import {
     CANVAS_WIDTH,
     genRandomWalls,
     genRandomCapsules,
-    genRandomBoxes
+    genRandomBoxes,
+    genCanvasWalls
 } from './test/utils';
 import { CanvasSettings } from './game-engine/engine/types';
 import { Vector } from './game-engine/physics/vector';
@@ -31,10 +32,10 @@ const sharedSettings = {
     speed: new Vector(0, 0),
     angleSpeed: 0,
     accelerationFactor: Math.random() * 1 + 0.5,
-    elasticity: 1,
+    elasticity: Math.random(),
     mass: 40 * 0.06,
     acceleration: new Vector(0, 0),
-    friction: Math.random() * 0.5,
+    friction: 0,
     angle: 0,
     rotationFactor: 0.1,
     DEBUG: true
@@ -64,7 +65,6 @@ const boxInitialSettings = {
     firstPoint: new Vector(0, 0),
     secondPoint: new Vector(1, 1),
     width: 40,
-    friction: 0.6,
     color: 'transparent',
     strokeColor: 'black'
 };
@@ -73,13 +73,15 @@ const mainBall = new Ball(ballInitialSettings);
 
 entities.push(mainBall);
 
+entities.push(...genCanvasWalls(CANVAS_WIDTH, CANVAS_HEIGHT));
+
 entities.push(...genRandomBalls(4, ballInitialSettings));
 
-entities.push(...genRandomCapsules(1, capsuleInitialSettings));
+entities.push(...genRandomCapsules(3, capsuleInitialSettings));
 
 entities.push(...genRandomWalls(1));
 
-// entities.push(...genRandomBoxes(1, boxInitialSettings));
+entities.push(...genRandomBoxes(4, boxInitialSettings));
 
 const engine = new Engine({
     canvas: canvasSettings,
