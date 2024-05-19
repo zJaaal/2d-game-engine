@@ -1,6 +1,6 @@
 import './style.css';
 import { Engine } from './game-engine/engine';
-import { Ball } from './test/entities/ball';
+import { Ball } from './common-entities/ball';
 import {
     genRandomBalls,
     RNGPosition,
@@ -10,13 +10,13 @@ import {
     genRandomCapsules,
     genRandomBoxes,
     genCanvasWalls
-} from './test/utils';
+} from './common-entities/utils';
 import { CanvasSettings } from './game-engine/engine/types';
 import { Vector } from './game-engine/physics/vector';
 
 import { Entity } from './game-engine/primitives/entity';
-import { BallSettings } from './test/entities/ball/types';
-import { CapsuleSettings } from './test/entities/capsule/types';
+import { BallSettings } from './common-entities/ball/types';
+import { CapsuleSettings } from './common-entities/capsule/types';
 
 let entities: Entity[] = [];
 

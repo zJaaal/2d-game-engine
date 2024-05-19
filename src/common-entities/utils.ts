@@ -1,12 +1,11 @@
 import { Vector } from '../game-engine/physics/vector';
-import { Ball } from './entities/ball';
-import { Box } from './entities/box';
-import { Capsule } from './entities/capsule';
-
-import { Wall } from './entities/wall';
-import { BallSettings } from './entities/ball/types';
-import { BoxSettings } from './entities/box/types';
-import { CapsuleSettings } from './entities/capsule/types';
+import { Ball } from './ball';
+import { BallSettings } from './ball/types';
+import { Box } from './box';
+import { BoxSettings } from './box/types';
+import { Capsule } from './capsule';
+import { CapsuleSettings } from './capsule/types';
+import { Wall } from './wall';
 
 export const PADDING = 100;
 export const ASPECT_RATIO = 1.7; // 16:9

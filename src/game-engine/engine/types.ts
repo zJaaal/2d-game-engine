@@ -1,5 +1,5 @@
 import { Engine } from '.';
-import { Ball } from '../../test/entities/ball';
+import { Ball } from '../../common-entities/ball';
 
 import { Entity } from '../primitives/entity';
 

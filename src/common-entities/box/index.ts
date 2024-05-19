@@ -1,10 +1,10 @@
-import { Entity } from '../../../game-engine/primitives/entity';
-import { Controls } from '../../../game-engine/primitives/entity/types';
-import { Vector } from '../../../game-engine/physics/vector';
-import { Rectangle } from '../../../game-engine/shapes/rectangle';
+import { Entity } from '../../game-engine/primitives/entity';
+import { Controls } from '../../game-engine/primitives/entity/types';
+import { Vector } from '../../game-engine/physics/vector';
+import { Rectangle } from '../../game-engine/shapes/rectangle';
 
 import { BoxSettings } from './types';
-import { LinearMovementMap } from '../../const';
+import { LinearMovementMap } from '../const';
 
 export class Box extends Entity {
     width: number;

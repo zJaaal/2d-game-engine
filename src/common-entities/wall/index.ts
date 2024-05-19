@@ -1,7 +1,7 @@
-import { Vector } from '../../../game-engine/physics/vector';
-import { Entity } from '../../../game-engine/primitives/entity';
+import { Vector } from '../../game-engine/physics/vector';
+import { Entity } from '../../game-engine/primitives/entity';
 
-import { Line } from '../../../game-engine/shapes/line';
+import { Line } from '../../game-engine/shapes/line';
 import { WallSettings } from './types';
 
 export class Wall extends Entity {

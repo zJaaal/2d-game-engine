@@ -1,11 +1,11 @@
-import { Entity } from '../../../game-engine/primitives/entity';
-import { Controls } from '../../../game-engine/primitives/entity/types';
-import { Vector } from '../../../game-engine/physics/vector';
-import { Circle } from '../../../game-engine/shapes/circle';
-import { Rectangle } from '../../../game-engine/shapes/rectangle';
+import { Entity } from '../../game-engine/primitives/entity';
+import { Controls } from '../../game-engine/primitives/entity/types';
+import { Vector } from '../../game-engine/physics/vector';
+import { Circle } from '../../game-engine/shapes/circle';
+import { Rectangle } from '../../game-engine/shapes/rectangle';
 
 import { CapsuleSettings } from './types';
-import { LinearMovementMap } from '../../const';
+import { LinearMovementMap } from '../const';
 
 export class Capsule extends Entity {
     length: number;

@@ -1,4 +1,4 @@
-import { EntitySettings } from '../../../game-engine/primitives/entity/types';
+import { EntitySettings } from '../../game-engine/primitives/entity/types';
 
 export interface BallSettings extends EntitySettings {
     radius: number;
