@@ -1,30 +1,28 @@
-import { Entity } from '../../entity';
+import { Shape } from '../../shape';
 import { Vector } from '../vector';
 import { SeparationAxisTheorem } from './types';
 
 export function separationAxisTheorem(
-    firtsEntity: Entity,
-    secondEntity: Entity
-): SeparationAxisTheorem {
+    firstShape: Shape,
+    secondShape: Shape
+): SeparationAxisTheorem | undefined {
     let minOverlap = Infinity;
-    let smallestAxis = undefined;
-    let vertexEntity;
+    let smallestAxis = new Vector(0, 0);
+    let vertexShape = firstShape;
 
-    const axesByEntity = [firtsEntity.getAxes(secondEntity), secondEntity.getAxes(firtsEntity)];
+    const axesByEntity = [firstShape.getAxes(secondShape), secondShape.getAxes(firstShape)];
 
     for (let [i, axes] of axesByEntity.entries()) {
         for (let axis of axes) {
-            let projection1 = projectShapeOntoAxis(axis, firtsEntity);
-            let projection2 = projectShapeOntoAxis(axis, secondEntity);
+            let projection1 = projectShapeOntoAxis(axis, firstShape);
+            let projection2 = projectShapeOntoAxis(axis, secondShape);
 
             let overlap =
                 Math.min(projection1.max, projection2.max) -
                 Math.max(projection1.min, projection2.min);
 
             if (overlap < 0) {
-                return {
-                    collide: false
-                };
+                return undefined;
             }
 
             // If the projections are containing each other
@@ -48,11 +46,11 @@ export function separationAxisTheorem(
                 smallestAxis = axis;
 
                 if (!i) {
-                    vertexEntity = secondEntity;
+                    vertexShape = secondShape;
 
                     if (projection1.max > projection2.max) smallestAxis = axis.multiply(-1);
                 } else {
-                    vertexEntity = firtsEntity;
+                    vertexShape = firstShape;
 
                     if (projection1.max < projection2.max) smallestAxis = axis.multiply(-1);
                 }
@@ -60,17 +58,16 @@ export function separationAxisTheorem(
         }
     }
 
-    let contactVertex: Vector = projectShapeOntoAxis(smallestAxis!, vertexEntity!).collideVertex;
+    let contactVertex: Vector = projectShapeOntoAxis(smallestAxis, vertexShape).collideVertex;
 
     return {
-        collide: true,
         contactVertex,
         smallestAxis,
         minOverlap
     };
 }
 
-export function projectShapeOntoAxis(axis: Vector, entity: Entity) {
+export function projectShapeOntoAxis(axis: Vector, entity: Shape) {
     let vertexes = entity.getVertexes(axis);
 
     let min = Vector.dot(axis, vertexes[0]);
@@ -95,10 +92,10 @@ export function projectShapeOntoAxis(axis: Vector, entity: Entity) {
     return { min, max, collideVertex };
 }
 
-export function closestVertexToPoint(entity: Entity, point: Vector) {
+export function closestVertexToPoint(shape: Shape, point: Vector) {
     let minDistance = Infinity;
 
-    const vertexes = entity.getVertexes();
+    const vertexes = shape.getVertexes();
 
     let closestVertex = vertexes[0];
 

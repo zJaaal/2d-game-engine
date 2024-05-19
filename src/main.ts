@@ -75,15 +75,15 @@ const boxInitialSettings = {
 
 const mainBall = new Ball(ballInitialSettings);
 
-// entities.push(mainBall);
+entities.push(mainBall);
 
-// entities.push(...genRandomBalls(4, ballInitialSettings));
+entities.push(...genRandomBalls(4, ballInitialSettings));
 
 entities.push(...genRandomCapsules(1, capsuleInitialSettings));
 
 entities.push(...genRandomWalls(1));
 
-// entities.push(...genRandomBoxes(1, boxInitialSettings));
+entities.push(...genRandomBoxes(1, boxInitialSettings));
 
 const engine = new Engine({
     canvas: canvasSettings,

@@ -38,7 +38,7 @@ export class Circle extends Shape {
         ];
     }
 
-    override getAxes(entity: Entity): Vector[] {
+    override getAxes(entity: Shape): Vector[] {
         return [closestVertexToPoint(entity, this.position).subtract(this.position).unit()];
     }
 

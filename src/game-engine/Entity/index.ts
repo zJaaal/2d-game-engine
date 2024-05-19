@@ -30,8 +30,7 @@ export class Entity {
         mass,
         angle,
         rotationFactor,
-        vertexes,
-        direction
+        vertexes
     }: EntitySettings) {
         this.position = position;
         this.speed = speed;
@@ -55,12 +54,4 @@ export class Entity {
     reposition() {}
 
     draw(_ctx: CanvasRenderingContext2D) {}
-
-    getAxes(entity?: Entity): Vector[] {
-        return this.components.flatMap((component) => component.getAxes(entity));
-    }
-
-    getVertexes(axis?: Vector): Vector[] {
-        return this.components.flatMap((component) => component.getVertexes(axis));
-    }
 }

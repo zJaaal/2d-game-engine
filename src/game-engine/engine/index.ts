@@ -35,7 +35,7 @@ export class Engine {
         });
     }
 
-    initMainLoop({ entities = [], capsules = [], debugEntity }: MainLoopArgs) {
+    initMainLoop({ entities = [], debugEntity }: MainLoopArgs) {
         if (!this.ctx) {
             throw new Error('Canvas context is not initialized');
         }
@@ -44,25 +44,42 @@ export class Engine {
             this.ctx!.clearRect(0, 0, this.canvasSettings.width, this.canvasSettings.height);
             this.ctx!.font = '16px Arial';
 
+            let bestSat = {
+                minOverlap: -Infinity,
+                smallestAxis: new Vector(0, 0),
+                contactVertex: new Vector(0, 0)
+            };
+
             entities.forEach((entity, i) => {
                 entity.draw(this.ctx as CanvasRenderingContext2D);
 
                 if (entity.id === 'Player-Entity') entity.handlePressedKeys(this.pressedKeys);
 
                 for (let j = i + 1; j < entities.length; j++) {
-                    const { contactVertex, collide, minOverlap, smallestAxis } =
-                        separationAxisTheorem(entity, entities[j]);
+                    for (let firstComponent of entity.components) {
+                        for (let secondComponent of entities[j].components) {
+                            const satResult = separationAxisTheorem(
+                                firstComponent,
+                                secondComponent
+                            );
 
-                    if (collide && smallestAxis && contactVertex) {
-                        smallestAxis.draw({
-                            x: contactVertex.x,
-                            y: contactVertex.y,
+                            if (satResult && satResult.minOverlap > bestSat.minOverlap) {
+                                bestSat = satResult;
+                            }
+                        }
+                    }
+
+                    if (bestSat.minOverlap > 0) {
+                        bestSat.smallestAxis.draw({
+                            x: bestSat.contactVertex.x,
+                            y: bestSat.contactVertex.y,
                             color: 'red',
-                            scalar: minOverlap ?? 1,
+                            scalar: bestSat.minOverlap,
                             ctx: this.ctx as CanvasRenderingContext2D
                         });
                     }
                 }
+
                 entity.reposition();
             });
 

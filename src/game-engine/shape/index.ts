@@ -8,7 +8,7 @@ export class Shape {
 
     draw(_ctx: CanvasRenderingContext2D) {}
 
-    getAxes(_entity?: Entity): Vector[] {
+    getAxes(_entity?: Shape): Vector[] {
         return [];
     }
 
