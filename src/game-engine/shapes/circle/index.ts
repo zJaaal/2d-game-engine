@@ -1,4 +1,5 @@
-import { closestVertexToPoint } from '../../physics/utils';
+import { Collision } from '../../physics/collision';
+
 import { Vector } from '../../physics/vector';
 import { Shape } from '../../shape';
 import { CircleSettings } from './types';
@@ -7,7 +8,6 @@ export class Circle extends Shape {
     radius: number;
     color: string;
     strokeColor: string;
-    position: Vector;
 
     constructor({ position, radius, color, strokeColor }: CircleSettings) {
         super();
@@ -38,14 +38,12 @@ export class Circle extends Shape {
     }
 
     override getAxes(entity: Shape): Vector[] {
-        return [closestVertexToPoint(entity, this.position).subtract(this.position).unit()];
+        return [
+            Collision.closestVertexToPoint(entity, this.position).subtract(this.position).unit()
+        ];
     }
 
     override move(linearSpeed: Vector): void {
         this.position = this.position.add(linearSpeed);
-    }
-
-    setPosition(position: Vector): void {
-        this.position = position;
     }
 }

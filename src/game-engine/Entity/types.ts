@@ -113,7 +113,6 @@ export enum KeyCodes {
 export type Controls<T> = Map<T extends KeyCodes ? T : string, boolean>;
 
 export interface EntitySettings {
-    components?: Shape[];
     position: Vector;
     speed: Vector;
     elasticity: number;
@@ -127,4 +126,5 @@ export interface EntitySettings {
     DEBUG?: boolean;
     vertexes?: Vector[];
     direction?: Vector;
+    components?: Shape[];
 }

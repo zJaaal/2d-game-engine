@@ -12,6 +12,9 @@ export class Entity {
     elasticity: number;
     mass: number;
     inverseMass: number;
+    inverseInertia: number;
+    inertia: number;
+    angleSpeed: number;
     angle: number;
     rotationFactor: number;
     protected vertexes: Vector[];
@@ -34,19 +37,23 @@ export class Entity {
     }: EntitySettings) {
         this.position = position;
         this.speed = speed;
-        this.id = id;
-        this.DEBUG = DEBUG;
+        this.mass = mass;
+        this.inverseMass = this.mass ? 1 / this.mass : 0;
+        this.inertia = 0;
+        this.inverseInertia = mass ? 1 / this.inertia : 0;
+        this.elasticity = elasticity;
+
         this.accelerationFactor = accelerationFactor;
         this.acceleration = acceleration;
         this.friction = friction;
-        this.elasticity = elasticity;
-        this.mass = mass;
-        this.angle = angle;
+        this.angleSpeed = 0;
         this.rotationFactor = rotationFactor;
+        this.angle = angle;
 
-        this.inverseMass = this.mass ? 1 / this.mass : 0;
         this.vertexes = vertexes ?? [];
         this.components = [];
+        this.id = id;
+        this.DEBUG = DEBUG;
     }
 
     handlePressedKeys(_pressedKeys: Controls<KeyCodes>) {}

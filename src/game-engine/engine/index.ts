@@ -2,7 +2,7 @@ import { Vector } from '../physics/vector';
 
 import { Controls, KeyCodes } from '../entity/types';
 import { CanvasSettings, EngineSettings, MainLoopArgs } from './types';
-import { separationAxisTheorem } from '../physics/utils';
+import { Collision } from '../physics/collision';
 
 export class Engine {
     canvasSettings: CanvasSettings;
@@ -12,7 +12,7 @@ export class Engine {
 
     pressedKeys: Controls<KeyCodes> = new Map<KeyCodes, boolean>();
 
-    distanceVectors: Vector[] = [];
+    collsions: Collision[] = [];
 
     DEBUG = false;
 
@@ -44,8 +44,10 @@ export class Engine {
             this.ctx!.clearRect(0, 0, this.canvasSettings.width, this.canvasSettings.height);
             this.ctx!.font = '16px Arial';
 
+            this.collsions = [];
+
             let bestSat = {
-                minOverlap: -Infinity,
+                penetrationDepth: -Infinity,
                 smallestAxis: new Vector(0, 0),
                 contactVertex: new Vector(0, 0)
             };
@@ -58,29 +60,57 @@ export class Engine {
                 for (let j = i + 1; j < entities.length; j++) {
                     for (let firstComponent of entity.components) {
                         for (let secondComponent of entities[j].components) {
-                            const satResult = separationAxisTheorem(
+                            const satResult = Collision.separationAxisTheorem(
                                 firstComponent,
                                 secondComponent
                             );
 
-                            if (satResult && satResult.minOverlap > bestSat.minOverlap) {
+                            if (
+                                satResult &&
+                                satResult.penetrationDepth > bestSat.penetrationDepth
+                            ) {
                                 bestSat = satResult;
                             }
                         }
                     }
 
-                    if (bestSat.minOverlap > 0) {
+                    if (bestSat.penetrationDepth > 0) {
                         bestSat.smallestAxis.draw({
                             x: bestSat.contactVertex.x,
                             y: bestSat.contactVertex.y,
                             color: 'red',
-                            scalar: bestSat.minOverlap,
+                            scalar: bestSat.penetrationDepth,
                             ctx: this.ctx as CanvasRenderingContext2D
                         });
+
+                        const newCollsion = new Collision({
+                            entityA: entities[i],
+                            entityB: entities[j],
+                            normal: bestSat.smallestAxis,
+                            penetrationDepth: bestSat.penetrationDepth,
+                            collisionPoint: bestSat.contactVertex
+                        });
+
+                        this.collsions.push(newCollsion);
+
+                        this.ctx?.beginPath();
+                        this.ctx?.arc(
+                            bestSat.contactVertex.x,
+                            bestSat.contactVertex.y,
+                            5,
+                            0,
+                            2 * Math.PI
+                        );
+                        this.ctx?.stroke();
                     }
                 }
 
                 entity.reposition();
+            });
+
+            this.collsions.forEach((collision) => {
+                collision.penetrationResolution();
+                collision.collisionResponse();
             });
 
             requestAnimationFrame(loop);

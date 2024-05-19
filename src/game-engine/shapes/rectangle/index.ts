@@ -10,7 +10,6 @@ export class Rectangle extends Shape {
     width: number;
     color: string;
     strokeColor: string;
-    position: Vector;
     rotationMatrix: Matrix;
 
     constructor({ firstPoint, secondPoint, color, strokeColor, width }: RectangleSettings) {

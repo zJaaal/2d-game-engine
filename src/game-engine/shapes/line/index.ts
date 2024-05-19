@@ -15,6 +15,7 @@ export class Line extends Shape {
         this.color = color;
         this.direction = end.subtract(start).unit();
         this.length = end.subtract(start).magnitude();
+        this.position = new Vector((start.x + end.x) / 2, (start.y + end.y) / 2);
     }
 
     override draw(ctx: CanvasRenderingContext2D) {

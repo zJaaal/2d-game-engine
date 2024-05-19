@@ -10,10 +10,6 @@ export class Capsule extends Entity {
     strokeColor: string;
     color: string;
     length: number;
-    angleSpeed: number = 0;
-    inertia: number;
-    inverseInertia: number;
-
     start: Vector;
     end: Vector;
     radius: number;
@@ -86,12 +82,6 @@ export class Capsule extends Entity {
 
         this.inertia =
             (this.mass * (this.length + this.radius * 2) ** 2 + (this.radius * 2) ** 2) / 12;
-
-        if (this.mass === 0) {
-            this.inverseInertia = 0;
-        } else {
-            this.inverseInertia = 1 / this.inertia;
-        }
     }
 
     override draw(ctx: CanvasRenderingContext2D): void {
@@ -158,7 +148,7 @@ export class Capsule extends Entity {
 
         rectangle.move(this.speed, this.angle);
 
-        startCircle.setPosition(startCirclePosition);
-        endCircle.setPosition(endCirclePosition);
+        startCircle.position = startCirclePosition;
+        endCircle.position = endCirclePosition;
     }
 }

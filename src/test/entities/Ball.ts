@@ -50,6 +50,8 @@ export class Ball extends Entity {
         this.color = color ?? 'black';
         this.strokeColor = strokeColor ?? 'black';
 
+        this.inertia = 0;
+
         this.components = [new Circle({ position, radius, color, strokeColor })];
     }
 

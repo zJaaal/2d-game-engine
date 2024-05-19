@@ -9,9 +9,6 @@ export class Box extends Entity {
     color: string;
     strokeColor: string;
     length: number;
-    angleSpeed: number = 0;
-    inertia: number;
-    inverseInertia: number;
 
     constructor({
         position,
@@ -62,12 +59,6 @@ export class Box extends Entity {
         this.length = secondPoint.subtract(firstPoint).magnitude();
 
         this.inertia = (this.mass * this.width ** 2 + this.length ** 2) / 12;
-
-        if (this.mass === 0) {
-            this.inverseInertia = 0;
-        } else {
-            this.inverseInertia = 1 / this.inertia;
-        }
     }
     override draw(ctx: CanvasRenderingContext2D): void {
         this.components.forEach((component) => component.draw(ctx));
