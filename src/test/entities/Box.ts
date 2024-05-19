@@ -1,6 +1,5 @@
 import { Entity } from '../../game-engine/entity';
 import { Controls } from '../../game-engine/entity/types';
-import { createRotationMatrix } from '../../game-engine/physics/matrix';
 import { Vector } from '../../game-engine/physics/vector';
 import { Rectangle } from '../../game-engine/shapes/rectangle';
 import { BoxSettings, LinearMovementMap } from './types';

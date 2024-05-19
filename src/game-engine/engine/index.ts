@@ -35,7 +35,7 @@ export class Engine {
         });
     }
 
-    initMainLoop({ entities = [], debugEntity }: MainLoopArgs) {
+    initMainLoop({ entities = [] }: MainLoopArgs) {
         if (!this.ctx) {
             throw new Error('Canvas context is not initialized');
         }

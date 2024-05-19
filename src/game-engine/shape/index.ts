@@ -1,4 +1,3 @@
-import { Entity } from '../entity';
 import { Vector } from '../physics/vector';
 
 export class Shape {

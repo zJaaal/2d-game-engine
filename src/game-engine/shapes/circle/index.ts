@@ -1,4 +1,3 @@
-import { Entity } from '../../entity';
 import { closestVertexToPoint } from '../../physics/utils';
 import { Vector } from '../../physics/vector';
 import { Shape } from '../../shape';

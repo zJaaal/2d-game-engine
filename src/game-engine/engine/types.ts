@@ -1,6 +1,5 @@
 import { Engine } from '.';
 import { Ball } from '../../test/entities/Ball';
-import { Capsule } from '../../test/entities/Capsule';
 
 import { Entity } from '../entity';
 
@@ -25,6 +24,4 @@ export type DebugEntity = (
 
 export interface MainLoopArgs {
     entities?: Entity[];
-    capsules?: Capsule[];
-    debugEntity?: DebugEntity;
 }

@@ -1,7 +1,5 @@
 import { Entity } from '../../game-engine/entity';
 import { Controls } from '../../game-engine/entity/types';
-import { closestVertexToPoint } from '../../game-engine/physics/utils';
-import { Vector } from '../../game-engine/physics/vector';
 import { Circle } from '../../game-engine/shapes/circle';
 import { BallSettings, FULL_DEGREES, LinearMovementMap } from './types';
 

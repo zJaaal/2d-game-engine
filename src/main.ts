@@ -8,19 +8,14 @@ import {
     CANVAS_WIDTH,
     genRandomWalls,
     genRandomCapsules,
-    genCanvasWalls,
     genRandomBoxes
 } from './test/utils';
-import { CanvasSettings, DebugEntity } from './game-engine/engine/types';
+import { CanvasSettings } from './game-engine/engine/types';
 import { Vector } from './game-engine/physics/vector';
 
 import { BallSettings, CapsuleSettings } from './test/entities/types';
 
-import { Capsule } from './test/entities/Capsule';
-
 import { Entity } from './game-engine/entity';
-
-let capsules: Capsule[] = [];
 
 let entities: Entity[] = [];
 
@@ -92,12 +87,4 @@ const engine = new Engine({
 
 engine.initEngine();
 
-const debugEntity: DebugEntity = (ctx, entity, engine, i) => {
-    ctx!.fillText(
-        `Mass: ${entity.mass.toFixed(2)}\nElasticity: ${entity.elasticity.toFixed(2)}`,
-        entity.position.x + entity.radius,
-        entity.position.y + entity.radius
-    );
-};
-
-engine.initMainLoop({ entities, capsules, debugEntity });
+engine.initMainLoop({ entities });
