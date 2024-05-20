@@ -35,6 +35,11 @@ export class Vector {
         return new Vector(-this.y, this.x).unit();
     }
 
+    set(x: number, y: number) {
+        this.x = x;
+        this.y = y;
+    }
+
     static dot(v1: Vector, v2: Vector) {
         return v1.x * v2.x + v1.y * v2.y;
     }

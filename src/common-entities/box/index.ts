@@ -1,6 +1,5 @@
 import { Entity } from '../../game-engine/primitives/entity';
 import { Controls } from '../../game-engine/primitives/entity/types';
-import { Vector } from '../../game-engine/physics/vector';
 import { Rectangle } from '../../game-engine/shapes/rectangle';
 
 import { BoxSettings } from './types';
@@ -96,16 +95,16 @@ export class Box extends Entity {
                 this.acceleration = rectangle.direction.multiply(this.accelerationFactor);
             }
 
-            if (!UP && !DOWN) {
-                this.acceleration = new Vector(0, 0);
-            }
-
             if (LEFT) {
                 this.angleSpeed = -this.rotationFactor;
             }
 
             if (RIGHT) {
                 this.angleSpeed = this.rotationFactor;
+            }
+
+            if (!UP && !DOWN) {
+                this.acceleration.set(0, 0);
             }
         });
     }

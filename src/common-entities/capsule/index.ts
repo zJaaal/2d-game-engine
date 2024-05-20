@@ -108,16 +108,16 @@ export class Capsule extends Entity {
             this.acceleration = rectangle.direction.multiply(this.accelerationFactor);
         }
 
-        if (!UP && !DOWN) {
-            this.acceleration = new Vector(0, 0);
-        }
-
         if (LEFT) {
             this.angleSpeed = -this.rotationFactor;
         }
 
         if (RIGHT) {
             this.angleSpeed = this.rotationFactor;
+        }
+
+        if (!UP && !DOWN) {
+            this.acceleration.set(0, 0);
         }
     }
 
