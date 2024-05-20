@@ -9,20 +9,9 @@ export class Wall extends Entity {
     end: Vector;
     direction: Vector;
 
-    constructor({ position, end, id, elasticity, start, vertexes, strokeColor }: WallSettings) {
+    constructor({ start, end, strokeColor, ...entitySettings }: WallSettings) {
         super({
-            position: position ?? new Vector(0, 0),
-            elasticity: elasticity ?? 1,
-            speed: new Vector(0, 0),
-            acceleration: new Vector(0, 0),
-            accelerationFactor: 1,
-            friction: 0,
-            mass: 0,
-            id: 'Wall-' + id,
-            rotationFactor: 0,
-            angle: 0,
-            components: [],
-            vertexes,
+            ...entitySettings,
             strokeColor
         });
 

@@ -14,36 +14,20 @@ export class Capsule extends Entity {
     radius: number;
 
     constructor({
-        position,
-        end,
         start,
+        end,
         radius,
-        id,
         strokeColor,
         color,
-        elasticity,
-        acceleration,
-        accelerationFactor,
-        friction,
         mass,
-        rotationFactor,
-        angle,
-        DEBUG
+        ...entitySettings
     }: CapsuleSettings) {
         super({
-            position,
-            elasticity,
-            acceleration,
-            accelerationFactor,
-            friction,
+            ...entitySettings,
             mass,
-            rotationFactor,
-            angle,
-            DEBUG,
-            id,
             color,
             strokeColor,
-            speed: new Vector(0, 0)
+            speed: Vector.origin()
         });
 
         this.components = [

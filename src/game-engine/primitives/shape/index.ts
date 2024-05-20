@@ -4,12 +4,14 @@ import { ShapeSettings } from './types';
 
 export class Shape {
     vertexes: Vector[] = [];
-    position: Vector = new Vector(0, 0);
+
+    position: Vector = Vector.origin();
+    direction: Vector = Vector.origin();
+    refDirection: Vector = Vector.origin();
+    rotationMatrix: Matrix = new Matrix(2, 2);
+
     strokeColor: string;
     color: string;
-    direction: Vector = new Vector(0, 0);
-    refDirection: Vector = new Vector(0, 0);
-    rotationMatrix: Matrix = new Matrix(2, 2);
 
     constructor({ color, strokeColor }: ShapeSettings) {
         this.color = color ?? 'black';

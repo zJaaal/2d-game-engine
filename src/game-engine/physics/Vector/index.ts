@@ -28,7 +28,7 @@ export class Vector {
     unit() {
         const magnitude = this.magnitude();
 
-        return magnitude ? new Vector(this.x / magnitude, this.y / magnitude) : new Vector(0, 0);
+        return magnitude ? new Vector(this.x / magnitude, this.y / magnitude) : Vector.origin();
     }
 
     normal() {
@@ -40,6 +40,14 @@ export class Vector {
         this.y = y;
     }
 
+    draw({ x, y, color, scalar, ctx }: DrawVector) {
+        ctx.strokeStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + this.x * scalar, y + this.y * scalar);
+        ctx.stroke();
+    }
+
     static dot(v1: Vector, v2: Vector) {
         return v1.x * v2.x + v1.y * v2.y;
     }
@@ -48,11 +56,7 @@ export class Vector {
         return v1.x * v2.y - v1.y * v2.x;
     }
 
-    draw({ x, y, color, scalar, ctx }: DrawVector) {
-        ctx.strokeStyle = color;
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x + this.x * scalar, y + this.y * scalar);
-        ctx.stroke();
+    static origin() {
+        return new Vector(0, 0);
     }
 }

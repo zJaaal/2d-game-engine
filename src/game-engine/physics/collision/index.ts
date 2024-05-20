@@ -19,7 +19,7 @@ export class Collision {
         this.collisionPoint = collisionPoint;
     }
 
-    penetrationResolution() {
+    collide() {
         let penetrationFactor =
             this.penetrationDepth / (this.entityA.inverseMass + this.entityB.inverseMass);
 
@@ -105,7 +105,7 @@ export class Collision {
 
     static separationAxisTheorem(shapeA: Shape, shapeB: Shape): SeparationAxisTheorem | undefined {
         let minPenetrationDepth = Infinity;
-        let smallestAxis = new Vector(0, 0);
+        let smallestAxis = Vector.origin();
         let vertexShape = shapeA;
 
         const axesByEntity = [shapeA.getAxes(shapeB), shapeB.getAxes(shapeA)];
@@ -165,8 +165,8 @@ export class Collision {
         if (vertexShape === shapeB) smallestAxis = smallestAxis.multiply(-1);
 
         return {
-            contactVertex,
-            smallestAxis,
+            collisionPoint: contactVertex,
+            normal: smallestAxis,
             penetrationDepth: minPenetrationDepth
         };
     }

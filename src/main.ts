@@ -4,8 +4,6 @@ import { Ball } from './common-entities/ball';
 import {
     genRandomBalls,
     RNGPosition,
-    CANVAS_HEIGHT,
-    CANVAS_WIDTH,
     genRandomWalls,
     genRandomCapsules,
     genRandomBoxes,
@@ -17,8 +15,9 @@ import { Vector } from './game-engine/physics/vector';
 import { Entity } from './game-engine/primitives/entity';
 import { BallSettings } from './common-entities/ball/types';
 import { CapsuleSettings } from './common-entities/capsule/types';
-import { Triangle } from './game-engine/shapes/triangle';
 import { Star } from './common-entities/star';
+import { CANVAS_WIDTH, CANVAS_HEIGHT } from './common-entities/const';
+import { Triangle } from './game-engine/shapes/triangle';
 
 let entities: Entity[] = [];
 
@@ -31,12 +30,12 @@ const canvasSettings: CanvasSettings = {
 
 const sharedSettings = {
     position: RNGPosition(),
-    speed: new Vector(0, 0),
+    speed: Vector.origin(),
     angleSpeed: 0,
     accelerationFactor: Math.random() * 1 + 0.5,
     elasticity: 2,
     mass: 40 * 0.06,
-    acceleration: new Vector(0, 0),
+    acceleration: Vector.origin(),
     friction: 0,
     angle: 0,
     rotationFactor: 0.1,
@@ -54,7 +53,7 @@ const ballInitialSettings: BallSettings = {
 const capsuleInitialSettings: CapsuleSettings = {
     ...sharedSettings,
     id: 'Player-Entity',
-    end: new Vector(0, 0),
+    end: Vector.origin(),
     start: new Vector(1, 1),
     radius: 40,
     color: 'transparent',
@@ -64,7 +63,7 @@ const capsuleInitialSettings: CapsuleSettings = {
 const boxInitialSettings = {
     ...sharedSettings,
     id: 'Player-Entity',
-    firstPoint: new Vector(0, 0),
+    firstPoint: Vector.origin(),
     secondPoint: new Vector(1, 1),
     width: 40,
     color: 'transparent',
@@ -75,7 +74,7 @@ const triangle = new Star({
     strokeColor: 'black',
     color: 'transparent',
     elasticity: 1,
-    acceleration: new Vector(0, 0),
+    acceleration: Vector.origin(),
     accelerationFactor: Math.random() * 1 + 0.5,
     friction: 0,
     mass: 40 * 0.06,
@@ -84,8 +83,8 @@ const triangle = new Star({
     DEBUG: true,
     radius: 20,
     centralPoint: new Vector(500, 500),
-    position: new Vector(0, 0),
-    speed: new Vector(0, 0)
+    position: Vector.origin(),
+    speed: Vector.origin()
 });
 
 const mainBall = new Ball(ballInitialSettings);

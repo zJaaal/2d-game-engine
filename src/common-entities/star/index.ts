@@ -11,35 +11,21 @@ export class Star extends Entity {
     centralPoint: Vector;
 
     constructor({
-        position,
-        id,
-        strokeColor,
-        color,
-        elasticity,
-        acceleration,
-        accelerationFactor,
-        friction,
-        mass,
-        rotationFactor,
-        angle,
-        DEBUG,
         radius,
-        centralPoint
+        centralPoint,
+        position,
+        mass,
+        color,
+        strokeColor,
+        ...entitySettings
     }: StarSettings) {
         super({
+            ...entitySettings,
             position,
-            elasticity,
-            acceleration,
-            accelerationFactor,
-            friction,
             mass,
-            rotationFactor,
-            angle,
-            DEBUG,
-            id,
             color,
             strokeColor,
-            speed: new Vector(0, 0)
+            speed: Vector.origin()
         });
 
         this.radius = radius;

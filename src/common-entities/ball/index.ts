@@ -12,36 +12,18 @@ export class Ball extends Entity {
     endAngle: number;
 
     constructor({
-        components,
-        position,
-        speed,
-        id,
-        accelerationFactor,
-        acceleration,
-        friction,
-        DEBUG,
-        mass,
-        elasticity,
-        rotationFactor,
-        angle,
         radius,
         startAngle,
         endAngle,
+        components,
+        position,
         color,
-        strokeColor
+        strokeColor,
+        ...entitySettings
     }: BallSettings) {
         super({
+            ...entitySettings,
             position,
-            speed,
-            id,
-            accelerationFactor,
-            acceleration,
-            friction,
-            DEBUG,
-            mass,
-            elasticity,
-            angle,
-            rotationFactor,
             components,
             strokeColor,
             color

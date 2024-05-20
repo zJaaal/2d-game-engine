@@ -5,14 +5,9 @@ import { Box } from './box';
 import { BoxSettings } from './box/types';
 import { Capsule } from './capsule';
 import { CapsuleSettings } from './capsule/types';
+import { CANVAS_ENTITY_PADDING, CANVAS_HEIGHT, CANVAS_WIDTH } from './const';
+
 import { Wall } from './wall';
-
-export const PADDING = 100;
-export const ASPECT_RATIO = 1.7; // 16:9
-
-export const CANVAS_HEIGHT = window.document.body.clientHeight - PADDING;
-export const CANVAS_WIDTH = CANVAS_HEIGHT * ASPECT_RATIO;
-export const CANVAS_ENTITY_PADDING = 100;
 
 export const RNGSmallOrigin = () =>
     new Vector(Math.random() * CANVAS_ENTITY_PADDING, Math.random() * CANVAS_ENTITY_PADDING);
@@ -53,7 +48,7 @@ export function genRandomWalls(n: number) {
         walls.push(
             new Wall({
                 start: RNGPosition(),
-                position: new Vector(0, 0),
+                position: Vector.origin(),
                 end: RNGPosition(),
                 id: `wall-${i}`,
                 elasticity: 1,
@@ -83,7 +78,7 @@ export function genRandomCapsules(n: number, capsuleSettings: CapsuleSettings) {
                 ...capsuleSettings,
                 radius,
                 mass,
-                position: new Vector(0, 0),
+                position: Vector.origin(),
                 start,
                 end,
                 id: i ? `capsule-${i}` : capsuleSettings.id,
@@ -101,8 +96,8 @@ export function genCanvasWalls(canvasWidth: number, canvasHeight: number) {
     const elasticity = 1;
     walls.push(
         new Wall({
-            start: new Vector(0, 0),
-            position: new Vector(0, 0),
+            start: Vector.origin(),
+            position: Vector.origin(),
             end: new Vector(canvasWidth, 0),
             id: 'wall-0',
             strokeColor: 'black',
@@ -114,8 +109,8 @@ export function genCanvasWalls(canvasWidth: number, canvasHeight: number) {
     );
     walls.push(
         new Wall({
-            start: new Vector(0, 0),
-            position: new Vector(0, 0),
+            start: Vector.origin(),
+            position: Vector.origin(),
             end: new Vector(0, canvasHeight),
             id: 'wall-1',
             strokeColor: 'black',
@@ -128,7 +123,7 @@ export function genCanvasWalls(canvasWidth: number, canvasHeight: number) {
     walls.push(
         new Wall({
             start: new Vector(0, canvasHeight),
-            position: new Vector(0, 0),
+            position: Vector.origin(),
             end: new Vector(canvasWidth, canvasHeight),
             id: 'wall-2',
             strokeColor: 'black',
@@ -141,7 +136,7 @@ export function genCanvasWalls(canvasWidth: number, canvasHeight: number) {
     walls.push(
         new Wall({
             start: new Vector(canvasWidth, 0),
-            position: new Vector(0, 0),
+            position: Vector.origin(),
             end: new Vector(canvasWidth, canvasHeight),
             id: 'wall-3',
             strokeColor: 'black',

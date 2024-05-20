@@ -26,7 +26,7 @@ export class Circle extends Shape {
         ctx.closePath();
     }
 
-    override getVertexes(axis: Vector = new Vector(0, 0)): Vector[] {
+    override getVertexes(axis: Vector = Vector.origin()): Vector[] {
         return [
             this.position.add(axis.unit().multiply(-this.radius)),
             this.position.add(axis.unit().multiply(this.radius))

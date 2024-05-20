@@ -1,14 +1,13 @@
-import { Vector } from '../physics/vector';
-
 import { Controls, KeyCodes } from '../primitives/entity/types';
 import { CanvasSettings, EngineSettings, MainLoopArgs } from './types';
 import { Collision } from '../physics/collision';
+import { SAT_INITIAL_VALUE } from '../const';
+import { SeparationAxisTheorem } from '../physics/collision/types';
 
 export class Engine {
     canvasSettings: CanvasSettings;
-
-    canvas?: HTMLCanvasElement;
-    ctx?: CanvasRenderingContext2D | null;
+    canvas: HTMLCanvasElement | null = null;
+    ctx: CanvasRenderingContext2D | null = null;
 
     pressedKeys: Controls<KeyCodes> = new Map<KeyCodes, boolean>();
 
@@ -22,7 +21,7 @@ export class Engine {
     }
 
     initEngine() {
-        this.canvas = this.initCanva();
+        this.canvas = this.initCanvas();
 
         this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
 
@@ -36,62 +35,59 @@ export class Engine {
     }
 
     initMainLoop({ entities = [] }: MainLoopArgs) {
-        if (!this.ctx) {
-            throw new Error('Canvas context is not initialized');
-        }
-
         const loop = () => {
-            this.ctx!.clearRect(0, 0, this.canvasSettings.width, this.canvasSettings.height);
-            this.ctx!.font = '16px Arial';
+            if (!this.ctx) {
+                throw new Error('Canvas context is not initialized');
+            }
+
+            this.ctx.clearRect(0, 0, this.canvasSettings.width, this.canvasSettings.height);
+            this.ctx.font = '16px Arial';
 
             this.collisions.length = 0;
 
+            // Draw entities
             entities.forEach((entity) => {
                 entity.draw(this.ctx as CanvasRenderingContext2D);
                 if (entity.id === 'Player-Entity') entity.handlePressedKeys(this.pressedKeys);
                 entity.reposition();
             });
 
+            // Check collisions
             entities.forEach((entity, i) => {
                 for (let nextEntity = i + 1; nextEntity < entities.length; nextEntity++) {
-                    let bestSat = {
-                        penetrationDepth: -Infinity,
-                        smallestAxis: new Vector(0, 0),
-                        contactVertex: new Vector(0, 0)
-                    };
+                    let bestSat: SeparationAxisTheorem = SAT_INITIAL_VALUE;
 
+                    // I need to optimize this further, check at the Grid Collision Detection
                     for (let firstComponent of entity.components) {
                         for (let secondComponent of entities[nextEntity].components) {
-                            const satResult = Collision.separationAxisTheorem(
-                                firstComponent,
-                                secondComponent
-                            );
+                            const satResult =
+                                Collision.separationAxisTheorem(firstComponent, secondComponent) ??
+                                SAT_INITIAL_VALUE;
 
-                            if (
-                                satResult &&
-                                satResult.penetrationDepth > bestSat.penetrationDepth
-                            ) {
-                                bestSat = satResult;
-                            }
+                            // If the penetration depth is bigger than the bestSat, we update the bestSat
+                            bestSat =
+                                bestSat.penetrationDepth > satResult.penetrationDepth
+                                    ? bestSat
+                                    : satResult;
                         }
                     }
 
+                    // The ininital value of the bestSat is -Infinity, so we need to check if the bestSat is a valid collision
                     if (isFinite(bestSat.penetrationDepth)) {
-                        const newCollision = new Collision({
-                            entityA: entity,
-                            entityB: entities[nextEntity],
-                            normal: bestSat.smallestAxis,
-                            penetrationDepth: bestSat.penetrationDepth,
-                            collisionPoint: bestSat.contactVertex
-                        });
-
-                        this.collisions.push(newCollision);
+                        this.collisions.push(
+                            new Collision({
+                                entityA: entity,
+                                entityB: entities[nextEntity],
+                                ...bestSat
+                            })
+                        );
                     }
                 }
             });
 
+            // Resolve collisions
             this.collisions.forEach((collision) => {
-                collision.penetrationResolution();
+                collision.collide();
                 collision.collisionResponse();
             });
 
@@ -101,17 +97,18 @@ export class Engine {
         requestAnimationFrame(loop);
     }
 
-    private initCanva(): HTMLCanvasElement {
+    private initCanvas(): HTMLCanvasElement {
         let canvas = document.querySelector(`#${this.canvasSettings.id}`) as HTMLCanvasElement;
 
         if (!canvas) {
             canvas = document.createElement('canvas');
             document.body.appendChild(canvas);
-            canvas.id = this.canvasSettings.id;
-            canvas.width = this.canvasSettings.width;
-            canvas.height = this.canvasSettings.height;
-            canvas.tabIndex = 0;
         }
+
+        canvas.id = this.canvasSettings.id;
+        canvas.width = this.canvasSettings.width;
+        canvas.height = this.canvasSettings.height;
+        canvas.tabIndex = 0;
         canvas.classList.add(this.canvasSettings.styleClass);
 
         return canvas;

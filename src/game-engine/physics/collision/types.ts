@@ -3,15 +3,12 @@ import { Entity } from '../../primitives/entity';
 import { Vector } from '../vector';
 
 export interface SeparationAxisTheorem {
-    contactVertex: Vector;
-    smallestAxis: Vector;
+    collisionPoint: Vector;
+    normal: Vector;
     penetrationDepth: number;
 }
 
-export interface CollisionSettings {
+export interface CollisionSettings extends SeparationAxisTheorem {
     entityA: Entity;
     entityB: Entity;
-    penetrationDepth: number;
-    normal: Vector;
-    collisionPoint: Vector;
 }

@@ -9,35 +9,15 @@ export class Box extends Entity {
     width: number;
 
     constructor({
-        position,
-        speed,
-        id,
-        accelerationFactor,
-        acceleration,
-        friction,
-        DEBUG,
-        mass,
-        elasticity,
-        angle,
-        rotationFactor,
-        width,
         color,
         strokeColor,
         firstPoint,
-        secondPoint
+        secondPoint,
+        width,
+        ...boxSettings
     }: BoxSettings) {
         super({
-            position,
-            speed,
-            id,
-            accelerationFactor,
-            acceleration,
-            friction,
-            DEBUG,
-            mass,
-            elasticity,
-            angle,
-            rotationFactor,
+            ...boxSettings,
             color,
             strokeColor
         });

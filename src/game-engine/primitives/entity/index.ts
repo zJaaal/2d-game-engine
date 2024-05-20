@@ -4,11 +4,14 @@ import { Controls, EntitySettings, KeyCodes } from './types';
 
 export class Entity {
     position: Vector;
-    accelerationFactor: number;
     speed: Vector;
     acceleration: Vector;
+    protected vertexes: Vector[];
+
+    components: Shape[];
+
+    accelerationFactor: number;
     friction: number;
-    id: string;
     elasticity: number;
     mass: number;
     inverseMass: number;
@@ -17,8 +20,9 @@ export class Entity {
     angleSpeed: number;
     angle: number;
     rotationFactor: number;
-    protected vertexes: Vector[];
-    components: Shape[];
+
+    id: string;
+
     protected DEBUG: boolean;
 
     constructor({
@@ -34,25 +38,25 @@ export class Entity {
         angle,
         rotationFactor,
         vertexes
-    }: EntitySettings) {
-        this.position = position;
-        this.speed = speed;
-        this.mass = mass;
+    }: Partial<EntitySettings>) {
+        this.position = position ?? Vector.origin();
+        this.speed = speed ?? Vector.origin();
+        this.mass = mass ?? 0;
         this.inverseMass = this.mass ? 1 / this.mass : 0;
         this.inertia = 0;
         this.inverseInertia = this.inertia ? 1 / this.inertia : 0;
-        this.elasticity = elasticity;
+        this.elasticity = elasticity ?? 1;
 
-        this.accelerationFactor = accelerationFactor;
-        this.acceleration = acceleration;
-        this.friction = friction;
+        this.accelerationFactor = accelerationFactor ?? 0;
+        this.acceleration = acceleration ?? Vector.origin();
+        this.friction = friction ?? 0;
         this.angleSpeed = 0;
-        this.rotationFactor = rotationFactor;
-        this.angle = angle;
+        this.rotationFactor = rotationFactor ?? 0;
+        this.angle = angle ?? 0;
 
         this.vertexes = vertexes ?? [];
         this.components = [];
-        this.id = id;
+        this.id = id ?? Math.random().toString(36).slice(2, 9);
         this.DEBUG = DEBUG;
     }
 
