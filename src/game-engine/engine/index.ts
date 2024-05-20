@@ -60,9 +60,10 @@ export class Engine {
                     // I need to optimize this further, check at the Grid Collision Detection
                     for (let firstComponent of entity.components) {
                         for (let secondComponent of entities[nextEntity].components) {
-                            const satResult =
-                                Collision.separationAxisTheorem(firstComponent, secondComponent) ??
-                                SAT_INITIAL_VALUE;
+                            const satResult = Collision.separationAxisTheorem(
+                                firstComponent,
+                                secondComponent
+                            );
 
                             // If the penetration depth is bigger than the bestSat, we update the bestSat
                             bestSat =

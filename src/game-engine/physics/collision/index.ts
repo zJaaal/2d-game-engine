@@ -1,3 +1,4 @@
+import { SAT_INITIAL_VALUE } from '../../const';
 import { Entity } from '../../primitives/entity';
 import { Shape } from '../../primitives/shape';
 
@@ -27,41 +28,32 @@ export class Collision {
 
         let penentrationResolution = this.normal.multiply(penetrationFactor);
 
+        // Move the entities to not be penetrating
         this.entityA.components[0].position = this.entityA.components[0].position.add(
             penentrationResolution.multiply(this.entityA.inverseMass)
         );
+
         this.entityB.components[0].position = this.entityB.components[0].position.add(
             penentrationResolution.multiply(-this.entityB.inverseMass)
         );
     }
 
     collisionResponse() {
-        const entities = [
-            {
-                entity: this.entityA,
-                point: this.collisionPoint
-            },
-            {
-                entity: this.entityB,
-                point: this.collisionPoint
-            }
-        ];
-        const [entityA, entityB] = entities.map(({ entity, point }) => {
+        const [entityA, entityB] = [this.entityA, this.entityB].map((entity) => {
             // 1. Closing Velocity
 
-            let collisionArm = point.subtract(entity.components[0].position);
+            let collisionArm = this.collisionPoint.subtract(entity.components[0].position);
+
             let rotationalVelocity = new Vector(
                 -entity.angleSpeed * collisionArm.y,
                 entity.angleSpeed * collisionArm.x
             );
-            let closingVelocity = entity.speed.add(rotationalVelocity);
-            // 2. Impulse augmentation
-            let impulseAugmentation = Vector.cross(collisionArm, this.normal);
-            impulseAugmentation = impulseAugmentation ** 2 * entity.inverseInertia;
 
-            // console.log(entity, impulseAugmentation);
-            // console.log(entity.inverseInertia);
-            // console.log(rotationalVelocity);
+            let closingVelocity = entity.speed.add(rotationalVelocity);
+
+            // 2. Impulse augmentation
+            let impulseAugmentation =
+                Vector.cross(collisionArm, this.normal) ** 2 * entity.inverseInertia;
 
             return {
                 closingVelocity,
@@ -86,9 +78,7 @@ export class Collision {
                 entityA.impulseAugmentation +
                 entityB.impulseAugmentation);
 
-        impulse = isFinite(impulse) ? impulse : 1;
-
-        let impulseVector = this.normal.multiply(impulse);
+        let impulseVector = this.normal.multiply(isFinite(impulse) ? impulse : 1);
 
         // 3. Calculate the new speed and angle speed
         this.entityA.speed = this.entityA.speed.add(
@@ -97,13 +87,14 @@ export class Collision {
         this.entityB.speed = this.entityB.speed.add(
             impulseVector.multiply(-this.entityB.inverseMass)
         );
+
         this.entityA.angleSpeed +=
             Vector.cross(entityA.collisionArm, impulseVector) * this.entityA.inverseInertia;
         this.entityB.angleSpeed -=
             Vector.cross(entityB.collisionArm, impulseVector) * this.entityB.inverseInertia;
     }
 
-    static separationAxisTheorem(shapeA: Shape, shapeB: Shape): SeparationAxisTheorem | undefined {
+    static separationAxisTheorem(shapeA: Shape, shapeB: Shape): SeparationAxisTheorem {
         let minPenetrationDepth = Infinity;
         let smallestAxis = Vector.origin();
         let vertexShape = shapeA;
@@ -120,7 +111,7 @@ export class Collision {
                     Math.max(projection1.min, projection2.min);
 
                 if (overlap < 0) {
-                    return undefined;
+                    return SAT_INITIAL_VALUE;
                 }
 
                 // If the projections are containing each other
@@ -156,7 +147,7 @@ export class Collision {
             }
         }
 
-        let contactVertex: Vector = this.projectShapeOntoAxis(
+        let collisionPoint: Vector = this.projectShapeOntoAxis(
             smallestAxis,
             vertexShape
         ).collideVertex;
@@ -165,7 +156,7 @@ export class Collision {
         if (vertexShape === shapeB) smallestAxis = smallestAxis.multiply(-1);
 
         return {
-            collisionPoint: contactVertex,
+            collisionPoint,
             normal: smallestAxis,
             penetrationDepth: minPenetrationDepth
         };

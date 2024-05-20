@@ -14,10 +14,10 @@ export class Box extends Entity {
         firstPoint,
         secondPoint,
         width,
-        ...boxSettings
+        ...entitySettings
     }: BoxSettings) {
         super({
-            ...boxSettings,
+            ...entitySettings,
             color,
             strokeColor
         });
