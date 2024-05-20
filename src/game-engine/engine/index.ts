@@ -3,7 +3,6 @@ import { Vector } from '../physics/vector';
 import { Controls, KeyCodes } from '../primitives/entity/types';
 import { CanvasSettings, EngineSettings, MainLoopArgs } from './types';
 import { Collision } from '../physics/collision';
-import { Triangle } from '../shapes/triangle';
 
 export class Engine {
     canvasSettings: CanvasSettings;
@@ -41,15 +40,6 @@ export class Engine {
             throw new Error('Canvas context is not initialized');
         }
 
-        let angleTest = 0.1;
-
-        const triangle = new Triangle({
-            vertexA: new Vector(100, 100),
-            vertexB: new Vector(150, 150),
-            vertexC: new Vector(200, 100),
-            color: 'transparent',
-            strokeColor: 'black'
-        });
         const loop = () => {
             this.ctx!.clearRect(0, 0, this.canvasSettings.width, this.canvasSettings.height);
             this.ctx!.font = '16px Arial';
@@ -104,12 +94,6 @@ export class Engine {
                 collision.penetrationResolution();
                 collision.collisionResponse();
             });
-
-            triangle.draw(this.ctx as CanvasRenderingContext2D);
-
-            angleTest += 0.1;
-
-            triangle.move(new Vector(0.01, 0.01), angleTest);
 
             requestAnimationFrame(loop);
         };

@@ -17,6 +17,8 @@ import { Vector } from './game-engine/physics/vector';
 import { Entity } from './game-engine/primitives/entity';
 import { BallSettings } from './common-entities/ball/types';
 import { CapsuleSettings } from './common-entities/capsule/types';
+import { Triangle } from './game-engine/shapes/triangle';
+import { Star } from './common-entities/star';
 
 let entities: Entity[] = [];
 
@@ -68,10 +70,27 @@ const boxInitialSettings = {
     color: 'transparent',
     strokeColor: 'black'
 };
+const triangle = new Star({
+    id: 'Player-Entity',
+    strokeColor: 'black',
+    color: 'transparent',
+    elasticity: 1,
+    acceleration: new Vector(0, 0),
+    accelerationFactor: Math.random() * 1 + 0.5,
+    friction: 0,
+    mass: 40 * 0.06,
+    rotationFactor: 0.1,
+    angle: 0,
+    DEBUG: true,
+    radius: 20,
+    centralPoint: new Vector(500, 500),
+    position: new Vector(0, 0),
+    speed: new Vector(0, 0)
+});
 
 const mainBall = new Ball(ballInitialSettings);
 
-entities.push(mainBall);
+// entities.push(mainBall);
 
 entities.push(...genCanvasWalls(CANVAS_WIDTH, CANVAS_HEIGHT));
 
@@ -81,7 +100,9 @@ entities.push(...genRandomBalls(4, ballInitialSettings));
 
 entities.push(...genRandomWalls(1));
 
-entities.push(...genRandomBoxes(2, boxInitialSettings));
+// entities.push(...genRandomBoxes(2, boxInitialSettings));
+
+entities.push(triangle);
 
 const engine = new Engine({
     canvas: canvasSettings,

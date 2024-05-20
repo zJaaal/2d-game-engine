@@ -35,7 +35,7 @@ export class Triangle extends Shape {
 
         ctx.lineTo(this.vertexes[0].x, this.vertexes[0].y);
         ctx.strokeStyle = this.strokeColor;
-        ctx.fillStyle = this.strokeColor;
+        ctx.fillStyle = this.color;
         ctx.stroke();
         ctx.fill();
         ctx.closePath();
@@ -46,7 +46,12 @@ export class Triangle extends Shape {
     }
 
     getAxes(): Vector[] {
-        return [this.direction.normal(), this.direction];
+        // Perpendicular lines to the edges of the triangle are the axes of the triangle
+        return [
+            this.vertexes[1].subtract(this.vertexes[0]).normal(),
+            this.vertexes[2].subtract(this.vertexes[1]).normal(),
+            this.vertexes[0].subtract(this.vertexes[2]).normal()
+        ];
     }
 
     move(linearSpeed: Vector, angle: number): void {
