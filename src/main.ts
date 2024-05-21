@@ -41,7 +41,8 @@ const sharedSettings = {
     rotationFactor: 0.1,
     DEBUG: true,
     angularFriction: 0.1,
-    maxSpeed: 2
+    maxSpeed: 2,
+    layer: 1
 };
 
 const ballInitialSettings: BallSettings = {
@@ -71,7 +72,7 @@ const boxInitialSettings = {
     color: 'transparent',
     strokeColor: 'black'
 };
-const triangle = new Star({
+const star = new Star({
     id: 'Player-Entity',
     strokeColor: 'black',
     color: 'transparent',
@@ -88,7 +89,8 @@ const triangle = new Star({
     position: Vector.origin(),
     speed: Vector.origin(),
     maxSpeed: 2,
-    angularFriction: 0.1
+    angularFriction: 0.1,
+    layer: 2
 });
 
 const mainBall = new Ball(ballInitialSettings);
@@ -105,13 +107,23 @@ entities.push(...genRandomWalls(1));
 
 // entities.push(...genRandomBoxes(2, boxInitialSettings));
 
-entities.push(triangle);
+entities.push(star);
 
 const engine = new Engine({
     canvas: canvasSettings,
     DEBUG: false
 });
 
-engine.initEngine();
+engine.gameLogic = (entities: Entity[]) => {
+    entities.forEach((entity) => {
+        if (entity.id !== star.id) {
+            const { penetrationDepth } = engine.collide(entity, star);
 
-engine.initMainLoop({ entities });
+            if (isFinite(penetrationDepth)) {
+                entity.removeNextFrame(); // this will remove all the walls in this state
+            }
+        }
+    });
+};
+
+engine.initEngine().initMainLoop({ entities });

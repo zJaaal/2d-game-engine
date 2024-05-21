@@ -3,6 +3,7 @@ import { CanvasSettings, EngineSettings, MainLoopArgs } from './types';
 import { Collision } from '../physics/collision';
 import { SAT_INITIAL_VALUE } from '../const';
 import { SeparationAxisTheorem } from '../physics/collision/types';
+import { Entity } from '../primitives/entity';
 
 export class Engine {
     canvasSettings: CanvasSettings;
@@ -20,6 +21,8 @@ export class Engine {
         this.DEBUG = settings.DEBUG;
     }
 
+    gameLogic: (entities: Entity[]) => void = () => {};
+
     initEngine() {
         this.canvas = this.initCanvas();
 
@@ -32,6 +35,8 @@ export class Engine {
         this.canvas.addEventListener('keyup', (e) => {
             this.pressedKeys.set(e.code as KeyCodes, false);
         });
+
+        return this;
     }
 
     initMainLoop({ entities = [] }: MainLoopArgs) {
@@ -40,68 +45,93 @@ export class Engine {
                 throw new Error('Canvas context is not initialized');
             }
 
-            this.ctx.clearRect(0, 0, this.canvasSettings.width, this.canvasSettings.height);
-            this.ctx.font = '16px Arial';
-
-            this.collisions.length = 0;
-
-            // Render entities
-            entities.forEach((entity) => {
-                if (entity.remove) {
-                    entities.splice(entities.indexOf(entity), 1);
-
-                    console.log('Entity removed', entity.id);
-                }
-
-                entity.render(this.ctx as CanvasRenderingContext2D);
-                if (entity.id === 'Player-Entity') entity.handlePressedKeys(this.pressedKeys);
-                entity.reposition();
-            });
-
-            // Check collisions
-            entities.forEach((entity, i) => {
-                for (let nextEntity = i + 1; nextEntity < entities.length; nextEntity++) {
-                    let bestSat: SeparationAxisTheorem = SAT_INITIAL_VALUE;
-
-                    // I need to optimize this further, check at the Grid Collision Detection
-                    for (let firstComponent of entity.components) {
-                        for (let secondComponent of entities[nextEntity].components) {
-                            const satResult = Collision.separationAxisTheorem(
-                                firstComponent,
-                                secondComponent
-                            );
-
-                            // If the penetration depth is bigger than the bestSat, we update the bestSat
-                            bestSat =
-                                bestSat.penetrationDepth > satResult.penetrationDepth
-                                    ? bestSat
-                                    : satResult;
-                        }
-                    }
-
-                    // The ininital value of the bestSat is -Infinity, so we need to check if the bestSat is a valid collision
-                    if (isFinite(bestSat.penetrationDepth)) {
-                        this.collisions.push(
-                            new Collision({
-                                entityA: entity,
-                                entityB: entities[nextEntity],
-                                ...bestSat
-                            })
-                        );
-                    }
-                }
-            });
-
-            // Resolve collisions
-            this.collisions.forEach((collision) => {
-                collision.collide();
-                collision.collisionResponse();
-            });
+            this.userInteraction(entities);
+            this.gameLogic(entities);
+            this.renderLoop(entities);
+            this.physicsLoop(entities);
 
             requestAnimationFrame(loop);
         };
 
         requestAnimationFrame(loop);
+    }
+
+    private userInteraction(entities: Entity[]) {
+        entities.forEach((entity) => {
+            if (entity.id === 'Player-Entity') entity.handlePressedKeys(this.pressedKeys);
+        });
+    }
+
+    private renderLoop(entities: Entity[]) {
+        if (!this.ctx) {
+            throw new Error('Canvas context is not initialized');
+        }
+        this.ctx.clearRect(0, 0, this.canvasSettings.width, this.canvasSettings.height);
+
+        entities.forEach((entity) => {
+            if (entity.remove) {
+                const index = entities.indexOf(entity);
+
+                index > -1 && entities.splice(index, 1);
+            } else {
+                entity.render(this.ctx as CanvasRenderingContext2D);
+            }
+        });
+    }
+
+    private physicsLoop(entities: Entity[]) {
+        this.collisions.length = 0;
+
+        entities.forEach((entity) => {
+            entity.reposition();
+        });
+
+        entities.forEach((entity, i) => {
+            for (let nextEntity = i + 1; nextEntity < entities.length; nextEntity++) {
+                const bestSat = this.collide(entity, entities[nextEntity]);
+
+                // The ininital value of the bestSat is -Infinity, so we need to check if the bestSat is a valid collision
+                if (isFinite(bestSat.penetrationDepth)) {
+                    this.collisions.push(
+                        new Collision({
+                            entityA: entity,
+                            entityB: entities[nextEntity],
+                            ...bestSat
+                        })
+                    );
+                }
+            }
+        });
+
+        this.collisions.forEach((collision) => {
+            collision.collide();
+            collision.collisionResponse();
+        });
+    }
+
+    private sameLayerOrZero(entityA: Entity, entityB: Entity): boolean {
+        return entityA.layer === entityB.layer || entityA.layer === 0 || entityB.layer === 0;
+    }
+
+    collide(entityA: Entity, entityB: Entity): SeparationAxisTheorem {
+        let bestSat = SAT_INITIAL_VALUE;
+
+        if (this.sameLayerOrZero(entityA, entityB)) {
+            // I need to optimize this further, check at the Grid Collision Detection
+            for (let firstComponent of entityA.components) {
+                for (let secondComponent of entityB.components) {
+                    const satResult = Collision.separationAxisTheorem(
+                        firstComponent,
+                        secondComponent
+                    );
+
+                    // If the penetration depth is bigger than the bestSat, we update the bestSat
+                    bestSat =
+                        bestSat.penetrationDepth > satResult.penetrationDepth ? bestSat : satResult;
+                }
+            }
+        }
+        return bestSat;
     }
 
     private initCanvas(): HTMLCanvasElement {

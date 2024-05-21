@@ -55,7 +55,14 @@ export function genRandomWalls(n: number) {
                 strokeColor: RNGColor(),
                 angle: 0,
                 rotationFactor: 0,
-                friction: 0
+                friction: 0,
+                speed: Vector.origin(),
+                mass: 0,
+                acceleration: Vector.origin(),
+                accelerationFactor: 0,
+                maxSpeed: 0,
+                angularFriction: 0,
+                layer: 0
             })
         );
     }
@@ -96,15 +103,22 @@ export function genCanvasWalls(canvasWidth: number, canvasHeight: number) {
     const elasticity = 1;
     walls.push(
         new Wall({
+            elasticity,
             start: Vector.origin(),
             position: Vector.origin(),
             end: new Vector(canvasWidth, 0),
             id: 'wall-0',
             strokeColor: 'black',
-            elasticity,
             angle: 0,
             rotationFactor: 0,
-            friction: 0
+            friction: 0,
+            speed: Vector.origin(),
+            mass: 0,
+            acceleration: Vector.origin(),
+            accelerationFactor: 0,
+            maxSpeed: 0,
+            angularFriction: 0,
+            layer: 0
         })
     );
     walls.push(
@@ -117,7 +131,14 @@ export function genCanvasWalls(canvasWidth: number, canvasHeight: number) {
             elasticity,
             angle: 0,
             rotationFactor: 0,
-            friction: 0
+            friction: 0,
+            speed: Vector.origin(),
+            mass: 0,
+            acceleration: Vector.origin(),
+            accelerationFactor: 0,
+            maxSpeed: 0,
+            angularFriction: 0,
+            layer: 0
         })
     );
     walls.push(
@@ -130,7 +151,14 @@ export function genCanvasWalls(canvasWidth: number, canvasHeight: number) {
             elasticity,
             angle: 0,
             rotationFactor: 0,
-            friction: 0
+            friction: 0,
+            speed: Vector.origin(),
+            mass: 0,
+            acceleration: Vector.origin(),
+            accelerationFactor: 0,
+            maxSpeed: 0,
+            angularFriction: 0,
+            layer: 0
         })
     );
     walls.push(
@@ -143,7 +171,14 @@ export function genCanvasWalls(canvasWidth: number, canvasHeight: number) {
             elasticity,
             angle: 0,
             rotationFactor: 0,
-            friction: 0
+            friction: 0,
+            speed: Vector.origin(),
+            mass: 0,
+            acceleration: Vector.origin(),
+            accelerationFactor: 0,
+            maxSpeed: 0,
+            angularFriction: 0,
+            layer: 0
         })
     );
     return walls;

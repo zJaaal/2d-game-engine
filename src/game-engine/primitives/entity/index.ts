@@ -22,6 +22,7 @@ export class Entity {
     rotationFactor: number;
     angularFriction: number;
     maxSpeed: number;
+    layer: number;
 
     id: string;
 
@@ -42,7 +43,8 @@ export class Entity {
         rotationFactor,
         vertexes,
         angularFriction,
-        maxSpeed
+        maxSpeed,
+        layer
     }: EntitySettings) {
         this.position = position ?? Vector.origin();
         this.speed = speed ?? Vector.origin();
@@ -60,6 +62,7 @@ export class Entity {
         this.rotationFactor = rotationFactor ?? 0;
         this.angle = angle ?? 0;
         this.maxSpeed = maxSpeed ?? Infinity;
+        this.layer = layer ?? 0;
 
         this.vertexes = vertexes ?? [];
         this.components = [];

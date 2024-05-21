@@ -125,6 +125,7 @@ export interface EntitySettings {
     angularFriction: number;
     id: string;
     maxSpeed: number;
+    layer: number;
     DEBUG?: boolean;
     vertexes?: Vector[];
     direction?: Vector;
