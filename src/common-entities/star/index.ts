@@ -32,7 +32,7 @@ export class Star extends Entity {
         this.centralPoint = centralPoint;
         let upDirection = new Vector(0, -1);
 
-        [1, -1].forEach((sign) => {
+        [-1, 1].forEach((sign) => {
             let upPoint = centralPoint.add(upDirection.multiply(radius * sign));
             let downPoint = centralPoint.add(upDirection.multiply((-radius / 2) * sign));
 
@@ -54,6 +54,8 @@ export class Star extends Entity {
         });
 
         this.inertia = (this.mass * (2 * this.radius) ** 2) / 12;
+
+        this.position = this.components[0].position;
     }
 
     override handlePressedKeys(pressedKeysMap: Controls<LinearMovementMap>): void {
@@ -99,7 +101,6 @@ export class Star extends Entity {
         this.position = this.position.add(this.speed);
 
         this.angle += this.angleSpeed;
-        this.angleSpeed *= 1 - this.angularFriction;
 
         this.components.forEach((component) => {
             component.move(this.speed, this.angle);

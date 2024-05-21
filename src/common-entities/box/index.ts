@@ -37,6 +37,8 @@ export class Box extends Entity {
         const rectangle = this.components[0] as Rectangle;
 
         this.inertia = (this.mass * rectangle.width ** 2 + rectangle.length ** 2) / 12;
+
+        this.position = rectangle.position;
     }
 
     override handlePressedKeys(pressedKeysMap: Controls<LinearMovementMap>): void {
@@ -82,7 +84,6 @@ export class Box extends Entity {
         super.reposition();
 
         this.angle += this.angleSpeed;
-        this.angleSpeed *= 1 - this.angularFriction;
         this.components.forEach((component) => component.move(this.speed, this.angle));
     }
 }

@@ -66,6 +66,8 @@ export class Capsule extends Entity {
 
         this.inertia =
             (this.mass * (rectangle.length + this.radius * 2) ** 2 + (this.radius * 2) ** 2) / 12;
+
+        this.position = this.components[0].position;
     }
 
     override handlePressedKeys(pressedKeysMap: Controls<LinearMovementMap>): void {
@@ -111,7 +113,6 @@ export class Capsule extends Entity {
         this.position = this.position.add(this.speed);
 
         this.angle += this.angleSpeed;
-        this.angleSpeed *= 1 - this.angularFriction;
 
         const rectangle = this.components[0] as Rectangle;
         const startCircle = this.components[1] as Circle;

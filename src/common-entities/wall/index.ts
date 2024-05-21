@@ -20,5 +20,7 @@ export class Wall extends Entity {
         this.end = end;
         this.start = start;
         this.direction = this.end.subtract(this.start).unit();
+
+        this.position = this.components[0].position;
     }
 }

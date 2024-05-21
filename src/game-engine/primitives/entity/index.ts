@@ -21,6 +21,7 @@ export class Entity {
     angle: number;
     rotationFactor: number;
     angularFriction: number;
+    maxSpeed: number;
 
     id: string;
 
@@ -40,8 +41,9 @@ export class Entity {
         angle,
         rotationFactor,
         vertexes,
-        angularFriction
-    }: Partial<EntitySettings>) {
+        angularFriction,
+        maxSpeed
+    }: EntitySettings) {
         this.position = position ?? Vector.origin();
         this.speed = speed ?? Vector.origin();
         this.mass = mass ?? 0;
@@ -57,6 +59,7 @@ export class Entity {
         this.angleSpeed = 0;
         this.rotationFactor = rotationFactor ?? 0;
         this.angle = angle ?? 0;
+        this.maxSpeed = maxSpeed ?? Infinity;
 
         this.vertexes = vertexes ?? [];
         this.components = [];
@@ -70,6 +73,11 @@ export class Entity {
     reposition() {
         this.acceleration = this.acceleration.unit().multiply(this.accelerationFactor);
         this.speed = this.speed.add(this.acceleration).multiply(1 - this.friction);
+        this.angleSpeed *= 1 - this.angularFriction;
+
+        if (this.speed.magnitude() > this.maxSpeed) {
+            this.speed = this.speed.unit().multiply(this.maxSpeed);
+        }
     }
 
     render(_ctx: CanvasRenderingContext2D) {

@@ -17,7 +17,7 @@ export class Triangle extends Shape {
         const averageY = (vertexA.y + vertexB.y + vertexC.y) / 3;
 
         this.position = new Vector(averageX, averageY);
-        this.direction = vertexA;
+        this.direction = vertexA.subtract(this.position).unit();
         this.refDirection = this.direction;
 
         this.refDiamond = [vertexA, vertexB, vertexC].map((vertex) =>

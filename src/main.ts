@@ -39,7 +39,9 @@ const sharedSettings = {
     friction: 0,
     angle: 0,
     rotationFactor: 0.1,
-    DEBUG: true
+    DEBUG: true,
+    angularFriction: 0.1,
+    maxSpeed: 2
 };
 
 const ballInitialSettings: BallSettings = {
@@ -84,7 +86,9 @@ const triangle = new Star({
     radius: 20,
     centralPoint: new Vector(500, 500),
     position: Vector.origin(),
-    speed: Vector.origin()
+    speed: Vector.origin(),
+    maxSpeed: 2,
+    angularFriction: 0.1
 });
 
 const mainBall = new Ball(ballInitialSettings);
