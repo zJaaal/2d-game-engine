@@ -122,11 +122,12 @@ export interface EntitySettings {
     angle: number;
     rotationFactor: number;
     friction: number;
+    angularFriction: number;
     id: string;
-    DEBUG?: boolean;
-    vertexes?: Vector[];
-    direction?: Vector;
-    components?: Shape[];
-    color?: string;
-    strokeColor?: string;
+    DEBUG: boolean;
+    vertexes: Vector[];
+    direction: Vector;
+    components: Shape[];
+    color: string;
+    strokeColor: string;
 }

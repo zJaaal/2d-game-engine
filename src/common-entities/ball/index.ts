@@ -76,9 +76,7 @@ export class Ball extends Entity {
     }
 
     override reposition() {
-        this.acceleration = this.acceleration.unit().multiply(this.accelerationFactor);
-        this.speed = this.speed.add(this.acceleration);
-        this.speed = this.speed.multiply(1 - this.friction);
+        super.reposition();
 
         this.components.forEach((component) => {
             component.move(this.speed);

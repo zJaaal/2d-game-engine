@@ -106,14 +106,12 @@ export class Capsule extends Entity {
     }
 
     override reposition(): void {
-        this.acceleration = this.acceleration.unit().multiply(this.accelerationFactor);
-
-        this.speed = this.speed.add(this.acceleration).multiply(1 - this.friction);
+        super.reposition();
 
         this.position = this.position.add(this.speed);
 
         this.angle += this.angleSpeed;
-        this.angleSpeed *= 1 - this.friction;
+        this.angleSpeed *= 1 - this.angularFriction;
 
         const rectangle = this.components[0] as Rectangle;
         const startCircle = this.components[1] as Circle;

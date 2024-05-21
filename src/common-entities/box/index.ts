@@ -39,17 +39,6 @@ export class Box extends Entity {
         this.inertia = (this.mass * rectangle.width ** 2 + rectangle.length ** 2) / 12;
     }
 
-    override reposition(): void {
-        this.acceleration = this.acceleration.unit().multiply(this.accelerationFactor);
-
-        this.speed = this.speed.add(this.acceleration).multiply(1 - this.friction);
-        this.angle += this.angleSpeed;
-
-        this.components.forEach((component) => component.move(this.speed, this.angle));
-
-        this.angleSpeed *= 1 - this.friction;
-    }
-
     override handlePressedKeys(pressedKeysMap: Controls<LinearMovementMap>): void {
         const UP =
             pressedKeysMap.get(LinearMovementMap.UP) ||
@@ -87,5 +76,13 @@ export class Box extends Entity {
                 this.acceleration.set(0, 0);
             }
         });
+    }
+
+    override reposition(): void {
+        super.reposition();
+
+        this.angle += this.angleSpeed;
+        this.angleSpeed *= 1 - this.angularFriction;
+        this.components.forEach((component) => component.move(this.speed, this.angle));
     }
 }

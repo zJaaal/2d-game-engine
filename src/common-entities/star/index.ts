@@ -94,14 +94,12 @@ export class Star extends Entity {
     }
 
     override reposition(): void {
-        this.acceleration = this.acceleration.unit().multiply(this.accelerationFactor);
-
-        this.speed = this.speed.add(this.acceleration).multiply(1 - this.friction);
+        super.reposition();
 
         this.position = this.position.add(this.speed);
 
         this.angle += this.angleSpeed;
-        this.angleSpeed *= 1 - this.friction;
+        this.angleSpeed *= 1 - this.angularFriction;
 
         this.components.forEach((component) => {
             component.move(this.speed, this.angle);

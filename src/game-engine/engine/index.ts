@@ -45,9 +45,15 @@ export class Engine {
 
             this.collisions.length = 0;
 
-            // Draw entities
+            // Render entities
             entities.forEach((entity) => {
-                entity.draw(this.ctx as CanvasRenderingContext2D);
+                if (entity.remove) {
+                    entities.splice(entities.indexOf(entity), 1);
+
+                    console.log('Entity removed', entity.id);
+                }
+
+                entity.render(this.ctx as CanvasRenderingContext2D);
                 if (entity.id === 'Player-Entity') entity.handlePressedKeys(this.pressedKeys);
                 entity.reposition();
             });

@@ -20,9 +20,11 @@ export class Entity {
     angleSpeed: number;
     angle: number;
     rotationFactor: number;
+    angularFriction: number;
 
     id: string;
 
+    remove: boolean;
     protected DEBUG: boolean;
 
     constructor({
@@ -37,7 +39,8 @@ export class Entity {
         mass,
         angle,
         rotationFactor,
-        vertexes
+        vertexes,
+        angularFriction
     }: Partial<EntitySettings>) {
         this.position = position ?? Vector.origin();
         this.speed = speed ?? Vector.origin();
@@ -50,6 +53,7 @@ export class Entity {
         this.accelerationFactor = accelerationFactor ?? 0;
         this.acceleration = acceleration ?? Vector.origin();
         this.friction = friction ?? 0;
+        this.angularFriction = angularFriction ?? 0;
         this.angleSpeed = 0;
         this.rotationFactor = rotationFactor ?? 0;
         this.angle = angle ?? 0;
@@ -58,13 +62,21 @@ export class Entity {
         this.components = [];
         this.id = id ?? Math.random().toString(36).slice(2, 9);
         this.DEBUG = DEBUG;
+        this.remove = false;
     }
 
     handlePressedKeys(_pressedKeys: Controls<KeyCodes>) {}
 
-    reposition() {}
+    reposition() {
+        this.acceleration = this.acceleration.unit().multiply(this.accelerationFactor);
+        this.speed = this.speed.add(this.acceleration).multiply(1 - this.friction);
+    }
 
-    draw(_ctx: CanvasRenderingContext2D) {
+    render(_ctx: CanvasRenderingContext2D) {
         this.components.forEach((component) => component.draw(_ctx));
+    }
+
+    removeNextFrame() {
+        this.remove = true;
     }
 }
